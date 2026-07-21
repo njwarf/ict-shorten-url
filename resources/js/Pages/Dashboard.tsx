@@ -1,26 +1,30 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { AppSidebar } from "@/Components/app-sidebar"
+import { SiteHeader } from "@/Components/site-header"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
-export default function Dashboard() {
+export const iframeHeight = "800px"
+
+export const description = "A sidebar with a header and a search form."
+
+export default function Page() {
     return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard
-                </h2>
-            }
-        >
-            <Head title="Dashboard" />
-
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-red-900">
-                            You're logged in!
+        <div className="[--header-height:calc(--spacing(14))]">
+            <SidebarProvider className="flex flex-col">
+                <SiteHeader />
+                <div className="flex flex-1">
+                    <AppSidebar />
+                    <SidebarInset>
+                        <div className="flex flex-1 flex-col gap-4 p-4">
+                            <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                                <div className="aspect-video rounded-xl bg-muted/50" />
+                                <div className="aspect-video rounded-xl bg-muted/50" />
+                                <div className="aspect-video rounded-xl bg-muted/50" />
+                            </div>
+                            <div className="min-h-screen flex-1 rounded-xl bg-muted/50 md:min-h-min" />
                         </div>
-                    </div>
+                    </SidebarInset>
                 </div>
-            </div>
-        </AuthenticatedLayout>
-    );
+            </SidebarProvider>
+        </div>
+    )
 }
