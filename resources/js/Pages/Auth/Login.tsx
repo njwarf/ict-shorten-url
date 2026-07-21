@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from "@inertiajs/react";
 import { FormEventHandler } from "react";
+import { Checkbox } from "@/Components/ui/checkbox";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -133,21 +134,17 @@ export default function Login({
                                         </Field>
                                         <Field>
                                             <label className="flex items-center gap-2 text-sm">
-                                                <input
-                                                    type="checkbox"
+                                                <Checkbox
                                                     checked={data.remember}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "remember",
-                                                            e.target.checked
-                                                        )
+                                                    onCheckedChange={(checked) =>
+                                                        setData("remember", checked === true)
+
                                                     }
                                                 />
 
                                                 Remember me
                                             </label>
                                         </Field>
-
                                         <Field>
                                             <Button
                                                 type="submit"
@@ -176,7 +173,7 @@ export default function Login({
                         </Card>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 }
