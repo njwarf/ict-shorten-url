@@ -1,9 +1,9 @@
 import * as React from "react"
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/Components/nav-main"
+import { NavProjects } from "@/Components/nav-projects"
+import { NavSecondary } from "@/Components/nav-secondary"
+import { NavUser } from "@/Components/nav-user"
 import {
     Sidebar,
     SidebarContent,
@@ -13,7 +13,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { TerminalSquareIcon, BotIcon, BookOpenIcon, Settings2Icon, LifeBuoyIcon, SendIcon, FrameIcon, PieChartIcon, MapIcon, TerminalIcon } from "lucide-react"
+import { LifeBuoyIcon, SendIcon, FrameIcon, TerminalIcon, LayoutDashboard, ChartColumn, Link2, MailIcon, GraduationCapIcon, UsersIcon, BriefcaseIcon } from "lucide-react"
 
 const data = {
     user: {
@@ -23,147 +23,75 @@ const data = {
     },
     navMain: [
         {
-            title: "Playground",
-            url: "#",
+            title: "Dashboard",
+            url: "/dashboard",
             icon: (
-                <TerminalSquareIcon
+                <LayoutDashboard
                 />
             ),
-            isActive: true,
-            items: [
-                {
-                    title: "History",
-                    url: "#",
-                },
-                {
-                    title: "Starred",
-                    url: "#",
-                },
-                {
-                    title: "Settings",
-                    url: "#",
-                },
-            ],
         },
         {
-            title: "Models",
-            url: "#",
+            title: "Analytics",
+            url: "/dashboard/analytics",
             icon: (
-                <BotIcon
+                <ChartColumn
                 />
             ),
-            items: [
-                {
-                    title: "Genesis",
-                    url: "#",
-                },
-                {
-                    title: "Explorer",
-                    url: "#",
-                },
-                {
-                    title: "Quantum",
-                    url: "#",
-                },
-            ],
         },
         {
-            title: "Documentation",
-            url: "#",
+            title: "Links",
+            url: "/dashboard/links",
             icon: (
-                <BookOpenIcon
+                <Link2
                 />
             ),
-            items: [
-                {
-                    title: "Introduction",
-                    url: "#",
-                },
-                {
-                    title: "Get Started",
-                    url: "#",
-                },
-                {
-                    title: "Tutorials",
-                    url: "#",
-                },
-                {
-                    title: "Changelog",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Settings",
-            url: "#",
-            icon: (
-                <Settings2Icon
-                />
-            ),
-            items: [
-                {
-                    title: "General",
-                    url: "#",
-                },
-                {
-                    title: "Team",
-                    url: "#",
-                },
-                {
-                    title: "Billing",
-                    url: "#",
-                },
-                {
-                    title: "Limits",
-                    url: "#",
-                },
-            ],
         },
     ],
     navSecondary: [
         {
-            title: "Support",
+            title: "UMTAS Apps",
             url: "#",
             icon: (
-                <LifeBuoyIcon
-                />
+                <LifeBuoyIcon />
             ),
         },
         {
-            title: "Feedback",
+            title: "Persuratan UMTAS",
             url: "#",
             icon: (
-                <SendIcon
-                />
+                <MailIcon />
+            ),
+        },
+        {
+            title: "PLP UMTAS",
+            url: "#",
+            icon: (
+                <GraduationCapIcon />
+            ),
+        },
+        {
+            title: "SIKEMAS UMTAS",
+            url: "#",
+            icon: (
+                <UsersIcon />
+            ),
+        },
+        {
+            title: "SIPP UMTAS",
+            url: "#",
+            icon: (
+                <BriefcaseIcon />
+            ),
+        },
+        {
+            title: "SIMPEG UMTAS",
+            url: "#",
+            icon: (
+                <UsersIcon />
             ),
         },
     ],
-    projects: [
-        {
-            name: "Design Engineering",
-            url: "#",
-            icon: (
-                <FrameIcon
-                />
-            ),
-        },
-        {
-            name: "Sales & Marketing",
-            url: "#",
-            icon: (
-                <PieChartIcon
-                />
-            ),
-        },
-        {
-            name: "Travel",
-            url: "#",
-            icon: (
-                <MapIcon
-                />
-            ),
-        },
-    ],
+    projects: [],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -181,7 +109,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                     <TerminalIcon className="size-4" />
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-medium">Acme Inc</span>
+                                    <span className="truncate font-medium">ICT Shorten</span>
                                     <span className="truncate text-xs">Enterprise</span>
                                 </div>
                             </a>
