@@ -4,16 +4,14 @@ import * as React from "react"
 
 import {
   SidebarGroup,
-  SidebarGroupContent,
+  SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import {ExternalLink} from "lucide-react";
 
-export function NavSecondary({
-  items,
-  ...props
-}: {
+export function NavSecondary({items, ...props}: {
   items: {
     title: string
     url: string
@@ -22,14 +20,16 @@ export function NavSecondary({
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
     <SidebarGroup {...props}>
+      <SidebarGroupLabel>UMTAS Apps</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild size="sm">
-                <a href={item.url}>
+                <a href={item.url} target="_blank" rel="noopener noreferrer">
                   {item.icon}
                   <span>{item.title}</span>
+                  <ExternalLink className="ml-auto text-muted-foreground" />
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
