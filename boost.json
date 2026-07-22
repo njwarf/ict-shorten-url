@@ -1,6 +1,6 @@
 {
     "agents": [
-        "zed"
+        "opencode"
     ],
     "cloud": false,
     "guidelines": true,
@@ -10,6 +10,7 @@
     "skills": [
         "laravel-best-practices",
         "pest-testing",
+        "inertia-react-development",
         "tailwindcss-development"
     ]
 }
