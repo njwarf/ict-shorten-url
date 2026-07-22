@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('referrers', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->string('slug', 16)->primary();
             $table->string('name', 255);
         });
     }
