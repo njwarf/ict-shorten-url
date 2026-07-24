@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sidebar"
 import { ChevronsUpDownIcon, BadgeCheckIcon, LogOutIcon } from "lucide-react"
 import { Link } from "@inertiajs/react"
+import { ThemeToggle } from "@/Components/theme-toggle"
 
 export function NavUser({
   user,
@@ -79,7 +80,12 @@ export function NavUser({
                   Account
                 </DropdownMenuItem>
               </Link>
+
+              <DropdownMenuItem>
+                <ThemeToggle />
+              </DropdownMenuItem>
             </DropdownMenuGroup>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link
