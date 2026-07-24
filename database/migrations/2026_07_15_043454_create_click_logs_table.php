@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('click_logs', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('url_id')->nullable();
-            $table->uuid('referrer_id')->nullable();
+            $table->string('referrer_slug', 16)->nullable();
             $table->string('user_agent', 255);
             $table->string('ip_address', 45);
             $table->timestamp('clicked_at')->useCurrent();
 
 
             $table->foreign('url_id')->references('id')->on('urls');
-            $table->foreign('referrer_id')->references('id')->on('referrers');
+            $table->foreign('referrer_slug')->references('slug')->on('referrers');
 
         });
     }
