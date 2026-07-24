@@ -13,27 +13,29 @@ class ReferrerSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('referrers')->insert([
-            [
-                'slug' => 'wa',
-                'name' => 'Whatsapp',
-            ],
-            [
-                'slug' => 'fb',
-                'name' => 'Facebook',
-            ],
-            [
-                'slug' => 'ig',
-                'name' => 'Instagram',
-            ],
-            [
-                'slug' => 'yt',
-                'name' => 'Youtube'
-            ],
-            [
-                'slug' => 'tt',
-                'name' => 'Tiktok',
-            ],
-        ]);
+        DB::table('referrers')->updateOrInsert(
+                ['slug' => 'wa'],
+                ['name' => 'Whatsapp']
+            );
+
+        DB::table('referrers')->updateOrInsert(
+                ['slug' => 'fb'],
+                ['name' => 'Facebook']
+            );
+
+        DB::table('referrers')->updateOrInsert(
+                ['slug' => 'ig'],
+                ['name' => 'Instagram']
+            );
+
+        DB::table('referrers')->updateOrInsert(
+                ['slug' => 'yt'],
+                ['name' => 'Youtube']
+            );
+
+        DB::table('referrers')->updateOrInsert(
+                ['slug' => 'tt'],
+                ['name' => 'Tiktok']
+            );
     }
 }
