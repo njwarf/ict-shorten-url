@@ -1,8 +1,4 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/Components/ui/avatar"
+import {Avatar, AvatarFallback, AvatarImage,} from "@/Components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,15 +8,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
-import { ChevronsUpDownIcon, BadgeCheckIcon, LogOutIcon } from "lucide-react"
-import { Link } from "@inertiajs/react"
-import { ThemeToggle } from "@/Components/theme-toggle"
+import {SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,} from "@/components/ui/sidebar"
+import {BadgeCheckIcon, ChevronsUpDownIcon, LogOutIcon} from "lucide-react"
+import {Link} from "@inertiajs/react"
 
 export function NavUser({
   user,
@@ -80,10 +70,6 @@ export function NavUser({
                   Account
                 </DropdownMenuItem>
               </Link>
-
-              <DropdownMenuItem>
-                <ThemeToggle />
-              </DropdownMenuItem>
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
