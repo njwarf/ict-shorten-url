@@ -23,15 +23,8 @@ import {
   GraduationCapIcon,
   UsersIcon,
   BriefcaseIcon,
-  Component
 } from "lucide-react"
-
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -126,12 +119,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={{
-          name: user.name,
-          email: user.email,
-          avatar: "/avatars/shadcn.jpg",
-        }}
-        />
+        {user && (
+          <NavUser user={{
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar ?? "/avatars/shadcn.jpg",
+          }}
+          />
+        )}
       </SidebarFooter>
     </Sidebar>
   )
