@@ -1,9 +1,10 @@
 import * as React from "react"
 
-import {NavMain} from "@/Components/nav-main"
-import {NavLinks} from "@/Components/nav-links"
-import {NavSecondary} from "@/Components/nav-secondary"
-import {NavUser} from "@/Components/nav-user"
+import { NavMain } from "@/Components/nav-main"
+import { NavLinks } from "@/Components/nav-links"
+import { NavSecondary } from "@/Components/nav-secondary"
+import { NavUser } from "@/Components/nav-user"
+import { usePage } from "@inertiajs/react"
 import {
   Sidebar,
   SidebarContent,
@@ -21,7 +22,8 @@ import {
   MailIcon,
   GraduationCapIcon,
   UsersIcon,
-  BriefcaseIcon
+  BriefcaseIcon,
+  Component
 } from "lucide-react"
 
 const data = {
@@ -49,7 +51,7 @@ const data = {
       title: "Links",
       url: "/dashboard/links",
       icon: (
-        <Link2/>
+        <Link2 />
       ),
     },
   ],
@@ -58,42 +60,43 @@ const data = {
       title: "Persuratan UMTAS",
       url: "#",
       icon: (
-        <MailIcon/>
+        <MailIcon />
       ),
     },
     {
       title: "PLP UMTAS",
       url: "#",
       icon: (
-        <GraduationCapIcon/>
+        <GraduationCapIcon />
       ),
     },
     {
       title: "SIKEMAS UMTAS",
       url: "#",
       icon: (
-        <UsersIcon/>
+        <UsersIcon />
       ),
     },
     {
       title: "SIPP UMTAS",
       url: "#",
       icon: (
-        <BriefcaseIcon/>
+        <BriefcaseIcon />
       ),
     },
     {
       title: "SIMPEG UMTAS",
       url: "#",
       icon: (
-        <UsersIcon/>
+        <UsersIcon />
       ),
     },
   ],
   projects: [],
 }
 
-export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const user = usePage().props.auth.user;
   return (
     <Sidebar
       className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
@@ -106,7 +109,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
               <a href="#">
                 <div
                   className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <TerminalIcon className="size-4"/>
+                  <TerminalIcon className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">ICT Shorten</span>
@@ -118,12 +121,17 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain}/>
-        <NavLinks links={data.projects}/>
-        <NavSecondary items={data.navSecondary} className="mt-auto"/>
+        <NavMain items={data.navMain} />
+        <NavLinks links={data.projects} />
+        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user}/>
+        <NavUser user={{
+          name: user.name,
+          email: user.email,
+          avatar: "/avatars/shadcn.jpg",
+        }}
+        />
       </SidebarFooter>
     </Sidebar>
   )
