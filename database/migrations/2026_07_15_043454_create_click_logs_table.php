@@ -23,6 +23,9 @@ return new class extends Migration
             $table->foreign('url_id')->references('id')->on('urls');
             $table->foreign('referrer_slug')->references('slug')->on('referrers');
 
+             $table->index(['url_id', 'user_agent']);
+             $table->index(['url_id', 'ip_address']);
+
         });
     }
 

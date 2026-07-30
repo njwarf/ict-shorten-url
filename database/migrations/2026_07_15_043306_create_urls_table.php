@@ -21,6 +21,8 @@ return new class extends Migration
 
             $table->unsignedBigInteger('click_count')->default(0);
             $table->timestamp('last_clicked_at')->nullable();
+            $table->unsignedBigInteger('unique_ip_count')->default(0);
+            $table->string('top_user_agent', 255)->nullable();
 
             $table->timestamp('created_at')->useCurrent();
 
