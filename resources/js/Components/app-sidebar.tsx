@@ -42,7 +42,7 @@ const data = {
     },
     {
       title: "Links",
-      url: "/dashboard/links",
+      url: "/links",
       icon: (
         <Link2 />
       ),
