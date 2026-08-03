@@ -24,7 +24,7 @@ return new class extends Migration
             $table->unsignedBigInteger('unique_ip_count')->default(0);
             $table->string('top_user_agent', 255)->nullable();
 
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
         });
