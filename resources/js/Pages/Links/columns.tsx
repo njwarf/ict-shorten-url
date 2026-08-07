@@ -31,14 +31,19 @@ export const columns: ColumnDef<Link>[] = [
     accessorKey: "title",
     header: "Title",
     cell: ({ row }) => (
-      <div className="space-y-1">
-        <p className="font-semibold">
-          {row.original.title}
+      <div>
+        <p className="text-lg font-semibold">
+          {row.original.short_code}
         </p>
 
-        <p className="text-xs text-muted-foreground">
+        <a
+          href={`${window.location.origin}/${row.original.short_code}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-muted-foreground hover:underline"
+        >
           {window.location.origin}/{row.original.short_code}
-        </p>
+        </a>
       </div>
     ),
   },
@@ -46,9 +51,14 @@ export const columns: ColumnDef<Link>[] = [
     accessorKey: "original_url",
     header: "Original URL",
     cell: ({ row }) => (
-      <div className="max-w-[320px] truncate text-sm text-muted-foreground">
+      <a
+        href={row.original.original_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-foreground hover:underline"
+      >
         {row.original.original_url}
-      </div>
+      </a>
     ),
   },
   {

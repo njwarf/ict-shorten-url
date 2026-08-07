@@ -105,5 +105,13 @@ class LinkController extends Controller
     $link->delete();
 
     return redirect()->route('links.index');
+
     }
+
+    public function redirect(string $short_code)
+{
+    $url = Url::where('short_code', $short_code)->firstOrFail();
+
+    return redirect()->away($url->original_url);
+}
 }
