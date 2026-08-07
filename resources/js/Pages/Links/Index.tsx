@@ -2,21 +2,24 @@ import { AppSidebar } from "@/Components/app-sidebar";
 import { router } from "@inertiajs/react";
 import { SiteHeader } from "@/Components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useState } from "react";
-
+import { Input } from "@/Components/ui/input";
+import { Button } from "@/Components/ui/button";
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+import { List, Grid2X2, Search, ChevronDown } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/Components/ui/dialog";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/Components/ui/dropdown-menu";
+
 interface Link {
   id: string;
   title: string;
   original_url: string;
   short_code: string;
+  is_active: boolean;
 }
 
 interface Props {
@@ -24,8 +27,10 @@ interface Props {
 }
 
 export default function Index({ links }: Props) {
-  const [open, setOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+
+  const tableColumns = columns;
+
   return (
     <div className="[--header-height:calc(--spacing(14))]">
       <SidebarProvider className="flex flex-col">
@@ -36,105 +41,82 @@ export default function Index({ links }: Props) {
 
           <SidebarInset>
             <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold">Links</h1>
+              <div className="mb-10 flex items-center justify-between">
+                <div className="space-y-2">
+                  <p className="text-xs font-medium uppercase tracking-widest text-gray-500">
+                    Inventory
+                  </p>
 
-                <a
-                  href="/links/create"
-                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                >
-                  Tambah Link
-                </a>
+                  <h1 className="text-6xl font-bold tracking-tight">
+                    Links
+                  </h1>
+
+                  <p className="text-sm text-gray-500">
+                    Manage your redirection architecture and track real-time performance across all touchpoints.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="default"
+                      className="bg-black hover:bg-gray-800"
+                      onClick={() => router.get("/links/create")}
+                    >
+                      + Create New Link
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <div className="mb-6 flex items-center justify-between gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+
+                  <Input
+                    placeholder="Search links or destination URLs..."
+                    className="w-[320px] pl-10"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="gap-2"
+                      >
+                        Sort by: Newest
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>Newest</DropdownMenuItem>
+                      <DropdownMenuItem>Oldest</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <Button
+                    variant="outline"
+                    size="icon"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="icon"
+                  >
+                    <Grid2X2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
-              <table className="w-full border">
-                <thead>
-                  <tr>
-                    <th className="border p-2">Title</th>
-                    <th className="border p-2">Original URL</th>
-                    <th className="border p-2">Short Code</th>
-                    <th className="border p-2">Aksi</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {links.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="border p-4 text-center"
-                      >
-                        Belum ada data link.
-                      </td>
-                    </tr>
-                  ) : (
-                    links.map((link) => (
-                      <tr key={link.id}>
-                        <td className="border p-2">{link.title}</td>
-                        <td className="border p-2">{link.original_url}</td>
-                        <td className="border p-2">{link.short_code}</td>
-
-                        <td className="border p-2">
-                          <a
-                            href={`/links/${link.id}/edit`}
-                            className="mr-2 rounded bg-yellow-500 px-3 py-1 text-white"
-                          >
-                            Edit
-                          </a>
-
-                          <button
-                            onClick={() => {
-                              setSelectedId(link.id);
-                              setOpen(true);
-                            }}
-                            className="rounded bg-red-600 px-3 py-1 text-white"
-                          >
-                            Hapus
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+              <DataTable
+                columns={tableColumns}
+                data={links}
+              />
             </div>
-          </SidebarInset >
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  Hapus Link?
-                </DialogTitle>
-
-                <DialogDescription>
-                  Apakah kamu yakin ingin menghapus link ini?
-                  Data yang sudah dihapus tidak bisa dikembalikan.
-                </DialogDescription>
-              </DialogHeader>
-
-              <DialogFooter>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="rounded border px-4 py-2"
-                >
-                  Batal
-                </button>
-
-                <button
-                  onClick={() => {
-                    if (selectedId) {
-                      router.delete(`/links/${selectedId}`);
-                    }
-
-                    setOpen(false);
-                  }}
-                  className="rounded bg-red-600 px-4 py-2 text-white"
-                >
-                  Hapus
-                </button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          </SidebarInset>
         </div >
       </SidebarProvider >
     </div >
