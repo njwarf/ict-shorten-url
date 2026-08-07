@@ -2,10 +2,9 @@ import { AppSidebar } from "@/Components/app-sidebar";
 import { router } from "@inertiajs/react";
 import { SiteHeader } from "@/Components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useState } from "react";
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
-import { columns as getColumns } from "./columns";
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { List, Grid2X2, Search, ChevronDown } from "lucide-react";
 import {
@@ -14,20 +13,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/Components/ui/dialog";
+
 interface Link {
   id: string;
   title: string;
   original_url: string;
   short_code: string;
-  status: string;
+  is_active: boolean;
 }
 
 interface Props {
@@ -35,13 +27,9 @@ interface Props {
 }
 
 export default function Index({ links }: Props) {
-  const [open, setOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const tableColumns = getColumns(
-    setOpen,
-    setSelectedId
-  );
+
+  const tableColumns = columns;
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
@@ -51,15 +39,15 @@ export default function Index({ links }: Props) {
         <div className="flex flex-1">
           <AppSidebar />
 
-          <SidebarInset >
+          <SidebarInset>
             <div className="p-6">
-              <div className="mb-10 flex items-start justify-between">
+              <div className="mb-10 flex items-center justify-between">
                 <div className="space-y-2">
                   <p className="text-xs font-medium uppercase tracking-widest text-gray-500">
                     Inventory
                   </p>
 
-                  <h1 className="text-5xl font-bold">
+                  <h1 className="text-6xl font-bold tracking-tight">
                     Links
                   </h1>
 
@@ -70,7 +58,8 @@ export default function Index({ links }: Props) {
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-2">
                     <Button
-                      className="bg-black text-white hover:bg-gray-800"
+                      size="default"
+                      className="bg-black hover:bg-gray-800"
                       onClick={() => router.get("/links/create")}
                     >
                       + Create New Link
@@ -84,7 +73,7 @@ export default function Index({ links }: Props) {
 
                   <Input
                     placeholder="Search links or destination URLs..."
-                    className="h-10 pl-10"
+                    className="w-[320px] pl-10"
                   />
                 </div>
 
@@ -93,7 +82,7 @@ export default function Index({ links }: Props) {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="outline"
-                        className="h-11 gap-2"
+                        className="gap-2"
                       >
                         Sort by: Newest
                         <ChevronDown className="h-4 w-4" />
@@ -109,7 +98,6 @@ export default function Index({ links }: Props) {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-11 w-11"
                   >
                     <List className="h-4 w-4" />
                   </Button>
@@ -117,7 +105,6 @@ export default function Index({ links }: Props) {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-11 w-11"
                   >
                     <Grid2X2 className="h-4 w-4" />
                   </Button>
@@ -130,43 +117,6 @@ export default function Index({ links }: Props) {
               />
             </div>
           </SidebarInset>
-
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  Hapus Link?
-                </DialogTitle>
-
-                <DialogDescription>
-                  Apakah kamu yakin ingin menghapus link ini?
-                  Data yang sudah dihapus tidak bisa dikembalikan.
-                </DialogDescription>
-              </DialogHeader>
-
-              <DialogFooter>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="rounded border px-4 py-2"
-                >
-                  Batal
-                </button>
-
-                <button
-                  onClick={() => {
-                    if (selectedId) {
-                      router.delete(`/links/${selectedId}`);
-                    }
-
-                    setOpen(false);
-                  }}
-                  className="rounded bg-red-600 px-4 py-2 text-white"
-                >
-                  Hapus
-                </button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
         </div >
       </SidebarProvider >
     </div >

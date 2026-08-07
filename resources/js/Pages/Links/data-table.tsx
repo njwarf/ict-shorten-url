@@ -34,7 +34,7 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="mt-6 overflow-hidden rounded-xl border bg-background shadow-sm">
+    <div className="mt-6 overflow-hidden rounded-xl border bg-background">
       <Table>
         <TableHeader className="bg-muted/30">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -90,10 +90,12 @@ export function DataTable<TData, TValue>({
       </Table>
 
       <div className="flex items-center justify-between border-t px-6 py-4 text-sm text-muted-foreground">
-        <p>Showing 1 to 4 of 24 results</p>
+        <p>
+          Showing {data.length === 0 ? 0 : 1} to {data.length} of {data.length} results
+        </p>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" disabled>
             &lt;
           </Button>
 
@@ -101,21 +103,7 @@ export function DataTable<TData, TValue>({
             1
           </Button>
 
-          <Button variant="ghost" size="icon">
-            2
-          </Button>
-
-          <Button variant="ghost" size="icon">
-            3
-          </Button>
-
-          <span>...</span>
-
-          <Button variant="ghost" size="icon">
-            6
-          </Button>
-
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" disabled>
             &gt;
           </Button>
         </div>
