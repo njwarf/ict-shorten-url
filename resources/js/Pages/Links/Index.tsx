@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/Components/app-sidebar";
+import { useState } from "react";
 import { router } from "@inertiajs/react";
 import { SiteHeader } from "@/Components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -28,8 +29,13 @@ interface Props {
 
 export default function Index({ links }: Props) {
 
-
   const tableColumns = columns;
+
+  const [search, setSearch] = useState("");
+
+  const filteredLinks = links.filter((link) =>
+    link.short_code.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
@@ -72,8 +78,10 @@ export default function Index({ links }: Props) {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
 
                   <Input
-                    placeholder="Search links or destination URLs..."
+                    placeholder="Search links..."
                     className="w-[320px] pl-10"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                   />
                 </div>
 
@@ -113,7 +121,7 @@ export default function Index({ links }: Props) {
 
               <DataTable
                 columns={tableColumns}
-                data={links}
+                data={filteredLinks}
               />
             </div>
           </SidebarInset>
