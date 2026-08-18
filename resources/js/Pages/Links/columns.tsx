@@ -33,7 +33,7 @@ export const columns: ColumnDef<Link>[] = [
     cell: ({ row }) => (
       <div>
         <p className="text-lg font-semibold">
-          {row.original.short_code}
+          {row.original.title}
         </p>
 
         <a
