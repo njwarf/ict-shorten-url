@@ -66,7 +66,7 @@ export default function Form({ link }: Props) {
           <AppSidebar />
 
           <SidebarInset>
-            <div className="min-h-full bg-gray-50/60 p-6 md:p-8">
+            <div className="min-h-full bg-gray-50/60 p-6 transition-colors dark:bg-gray-950 md:p-8">
               {/* Header */}
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -79,11 +79,11 @@ export default function Form({ link }: Props) {
                   </button>
 
                   <div>
-                    <p className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+                    <p className="text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:text-gray-600">
                       Management
                     </p>
 
-                    <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+                    <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-300">
                       {link ? "Edit Link" : "Create New Link"}
                     </h1>
                   </div>
@@ -114,11 +114,11 @@ export default function Form({ link }: Props) {
                 {/* LEFT */}
                 <div className="space-y-6">
                   {/* Link Information */}
-                  <div className="rounded-lg border bg-white p-5 shadow-sm">
+                  <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                     <form id="link-form" onSubmit={submit}>
                       {/* Link Title */}
                       <div className="mb-5">
-                        <label className="mb-2 block text-[11px] font-medium text-gray-700">
+                        <label className="mb-2 block text-[11px] font-medium text-gray-700 dark:text-gray-300">
                           Link Title
                         </label>
 
@@ -129,7 +129,7 @@ export default function Form({ link }: Props) {
                             setData("title", e.target.value)
                           }
                           placeholder="Campaign: Summer 2024 Launch"
-                          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-gray-500 focus:ring-1 focus:ring-gray-300"
+                          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-gray-500 focus:ring-1 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100 dark:placeholder:text-gray-600 dark:focus:border-gray-500 dark:focus:ring-gray-700"
                         />
 
                         {errors.title && (
@@ -152,7 +152,7 @@ export default function Form({ link }: Props) {
                             setData("original_url", e.target.value)
                           }
                           placeholder="https://example.com/your-long-product-marketing-url"
-                          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-gray-500 focus:ring-1 focus:ring-gray-300"
+                          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-gray-500 focus:ring-1 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100 dark:placeholder:text-gray-600 dark:focus:border-gray-500 dark:focus:ring-gray-700"
                         />
 
                         <p className="mt-1.5 text-[10px] text-gray-400">
@@ -174,8 +174,8 @@ export default function Form({ link }: Props) {
                         </label>
 
                         <div className="flex gap-2">
-                          <div className="flex flex-1 items-center overflow-hidden rounded-md border border-gray-300 bg-white">
-                            <span className="whitespace-nowrap bg-gray-50 px-3 text-xs text-gray-500">
+                          <div className="flex flex-1 items-center overflow-hidden rounded-md border border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-950">
+                            <span className="whitespace-nowrap bg-gray-50 px-3 text-xs text-gray-500 dark:text-gray-400 dark:bg-gray-900 dark:text-gray-400">
                               http://127.0.0.1:8000
                             </span>
 
@@ -186,14 +186,14 @@ export default function Form({ link }: Props) {
                                 setData("short_code", e.target.value)
                               }
                               placeholder="summer-sale"
-                              className="min-w-0 flex-1 border-0 px-2 py-2.5 text-sm text-gray-800 outline-none focus:ring-0"
+                              className="min-w-0 flex-1 border-0 bg-transparent px-2 py-2.5 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:ring-0 dark:text-gray-100 dark:placeholder:text-gray-600"
                             />
                           </div>
 
                           <button
                             type="button"
                             onClick={generateShortCode}
-                            className="flex items-center gap-1.5 rounded-md bg-gray-200 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-300"
+                            className="flex items-center gap-1.5 rounded-md bg-gray-200 px-4 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                           >
                             <RefreshCw className="h-3.5 w-3.5" />
                             Generate
@@ -215,13 +215,13 @@ export default function Form({ link }: Props) {
                   </div>
 
                   {/* Advanced Options */}
-                  <div className="rounded-lg border bg-white p-5 shadow-sm">
-                    <h2 className="mb-4 text-sm font-semibold text-gray-900">
+                  <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <h2 className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
                       Advanced Options
                     </h2>
 
                     {/* Password */}
-                    <div className="flex items-center justify-between rounded-md bg-gray-50 px-3 py-3">
+                    <div className="flex items-center justify-between rounded-md bg-gray-50 px-3 py-3 dark:bg-gray-800/60">
                       <div className="flex items-center gap-3">
                         <span className="text-gray-500">•••</span>
 
@@ -265,8 +265,8 @@ export default function Form({ link }: Props) {
                 {/* RIGHT */}
                 <div className="space-y-5">
                   {/* QR Preview */}
-                  <div className="overflow-hidden rounded-lg border bg-white shadow-sm">
-                    <div className="flex items-center justify-between border-b bg-gray-50 px-4 py-3">
+                  <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/60">
                       <p className="text-[10px] font-medium uppercase tracking-wide text-gray-500">
                         QR Code Preview
                       </p>
@@ -302,7 +302,7 @@ export default function Form({ link }: Props) {
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           type="button"
-                          className="flex items-center justify-center gap-1.5 rounded-md bg-gray-200 px-3 py-2 text-[10px] font-medium text-gray-700 hover:bg-gray-300"
+                          className="flex items-center justify-center gap-1.5 rounded-md bg-gray-200 px-3 py-2 text-[10px] font-medium text-gray-700 transition-colors hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                         >
                           <Printer className="h-3 w-3" />
                           Print Asset
@@ -310,7 +310,7 @@ export default function Form({ link }: Props) {
 
                         <button
                           type="button"
-                          className="flex items-center justify-center gap-1.5 rounded-md bg-gray-200 px-3 py-2 text-[10px] font-medium text-gray-700 hover:bg-gray-300"
+                          className="flex items-center justify-center gap-1.5 rounded-md bg-gray-200 px-3 py-2 text-[10px] font-medium text-gray-700 transition-colors hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                         >
                           <Palette className="h-3 w-3" />
                           Customize
@@ -320,20 +320,20 @@ export default function Form({ link }: Props) {
                   </div>
 
                   {/* Pro Tip */}
-                  <div className="rounded-lg border bg-white p-5 shadow-sm">
+                  <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                     <div className="flex gap-3">
-                      <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-gray-700" />
+                      <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-gray-700 dark:text-gray-300" />
 
                       <div>
-                        <h3 className="mb-2 text-xs font-semibold text-gray-800">
+                        <h3 className="mb-2 text-xs font-semibold text-gray-800 dark:text-gray-200">
                           Pro Tip
                         </h3>
 
-                        <p className="text-[10px] leading-5 text-gray-500">
+                        <p className="text-[10px] leading-5 text-gray-500 dark:text-gray-400">
                           Using descriptive short codes (like{" "}
-                          <span className="font-medium text-gray-700">
+                          <span className="font-medium text-gray-500 dark:text-gray-400">
                             /summer-sale
-                          </span>
+                          </span>{" "}
                           ) can increase click-through rates by up to 34%
                           compared to random strings.
                         </p>
@@ -345,7 +345,7 @@ export default function Form({ link }: Props) {
             </div>
           </SidebarInset>
         </div>
-      </SidebarProvider>
-    </div>
+      </SidebarProvider >
+    </div >
   );
 }
