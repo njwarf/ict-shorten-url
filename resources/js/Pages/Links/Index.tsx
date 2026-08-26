@@ -49,7 +49,7 @@ export default function Index({ links }: Props) {
             <div className="p-6">
               <div className="mb-10 flex items-center justify-between">
                 <div className="space-y-2">
-                  <p className="text-xs font-medium uppercase tracking-widest text-gray-500">
+                  <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
                     Inventory
                   </p>
 
@@ -57,7 +57,7 @@ export default function Index({ links }: Props) {
                     Links
                   </h1>
 
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Manage your redirection architecture and track real-time performance across all touchpoints.
                   </p>
                 </div>
@@ -65,7 +65,7 @@ export default function Index({ links }: Props) {
                   <div className="flex items-center gap-2">
                     <Button
                       size="default"
-                      className="bg-black hover:bg-gray-800"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90"
                       onClick={() => router.get("/links/create")}
                     >
                       + Create New Link
@@ -75,7 +75,7 @@ export default function Index({ links }: Props) {
               </div>
               <div className="mb-6 flex items-center justify-between gap-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 
                   <Input
                     placeholder="Search links..."
