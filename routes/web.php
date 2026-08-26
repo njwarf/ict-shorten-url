@@ -27,8 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('links', LinkController::class);
 });
 
-Route::get('/{short_code}', [LinkController::class, 'redirect'])
-    ->name('links.redirect');
-
 require __DIR__.'/auth.php';
 
+Route::get('/{short_code}', [LinkController::class, 'redirect'])
+    ->name('links.redirect');
