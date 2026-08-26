@@ -2,12 +2,20 @@ import { AppSidebar } from "@/Components/app-sidebar";
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import { SiteHeader } from "@/Components/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { List, Grid2X2, Search, ChevronDown } from "lucide-react";
+import {
+  List,
+  Grid2X2,
+  Search,
+  ChevronDown,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,19 +31,66 @@ interface Link {
   is_active: boolean;
 }
 
-interface Props {
-  links: Link[];
+interface PaginationLinkData {
+  url: string | null;
+  label: string;
+  active: boolean;
 }
 
-export default function Index({ links }: Props) {
+interface PaginatedLinks {
+  data: Link[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number | null;
+  to: number | null;
+  links: PaginationLinkData[];
+}
 
+interface Props {
+  links: PaginatedLinks;
+  filters?: {
+    search?: string;
+  };
+}
+
+export default function Index({ links, filters }: Props) {
   const tableColumns = columns;
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(filters?.search ?? "");
 
-  const filteredLinks = links.filter((link) =>
-    link.short_code.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredLinks = links.data;
+
+  const goToPage = (page: number) => {
+    router.get(
+      "/links",
+      {
+        page,
+        search: search || undefined,
+      },
+      {
+        preserveState: true,
+        preserveScroll: true,
+      }
+    );
+  };
+
+  const handleSearch = (value: string) => {
+    setSearch(value);
+
+    router.get(
+      "/links",
+      {
+        search: value || undefined,
+      },
+      {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+      }
+    );
+  };
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
@@ -47,6 +102,7 @@ export default function Index({ links }: Props) {
 
           <SidebarInset>
             <div className="p-6">
+              {/* Header */}
               <div className="mb-10 flex items-center justify-between">
                 <div className="space-y-2">
                   <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
@@ -58,30 +114,34 @@ export default function Index({ links }: Props) {
                   </h1>
 
                   <p className="text-sm text-muted-foreground">
-                    Manage your redirection architecture and track real-time performance across all touchpoints.
+                    Manage your redirection architecture and track
+                    real-time performance across all touchpoints.
                   </p>
                 </div>
+
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="default"
-                      className="bg-primary text-primary-foreground hover:bg-primary/90"
-                      onClick={() => router.get("/links/create")}
-                    >
-                      + Create New Link
-                    </Button>
-                  </div>
+                  <Button
+                    size="default"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    onClick={() => router.get("/links/create")}
+                  >
+                    + Create New Link
+                  </Button>
                 </div>
               </div>
+
+              {/* Search & Actions */}
               <div className="mb-6 flex items-center justify-between gap-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 
                   <Input
                     placeholder="Search links..."
                     className="w-[320px] pl-10"
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) =>
+                      handleSearch(e.target.value)
+                    }
                   />
                 </div>
 
@@ -98,8 +158,13 @@ export default function Index({ links }: Props) {
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Newest</DropdownMenuItem>
-                      <DropdownMenuItem>Oldest</DropdownMenuItem>
+                      <DropdownMenuItem>
+                        Newest
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem>
+                        Oldest
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
 
@@ -119,14 +184,17 @@ export default function Index({ links }: Props) {
                 </div>
               </div>
 
+              {/* Data Table */}
               <DataTable
                 columns={tableColumns}
                 data={filteredLinks}
+                pagination={links}
+                onPageChange={goToPage}
               />
             </div>
           </SidebarInset>
-        </div >
-      </SidebarProvider >
-    </div >
+        </div>
+      </SidebarProvider>
+    </div>
   );
 }
