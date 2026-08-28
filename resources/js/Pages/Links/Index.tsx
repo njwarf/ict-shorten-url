@@ -1,5 +1,5 @@
 import { AppSidebar } from "@/Components/app-sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { router } from "@inertiajs/react";
 import { SiteHeader } from "@/Components/site-header";
 import {
@@ -76,21 +76,23 @@ export default function Index({ links, filters }: Props) {
     );
   };
 
-  const handleSearch = (value: string) => {
-    setSearch(value);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      router.get(
+        "/links",
+        {
+          search: search || undefined,
+        },
+        {
+          preserveState: true,
+          preserveScroll: true,
+          replace: true,
+        }
+      );
+    }, 500);
 
-    router.get(
-      "/links",
-      {
-        search: value || undefined,
-      },
-      {
-        preserveState: true,
-        preserveScroll: true,
-        replace: true,
-      }
-    );
-  };
+    return () => clearTimeout(timeout);
+  }, [search]);
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
@@ -139,9 +141,7 @@ export default function Index({ links, filters }: Props) {
                     placeholder="Search links..."
                     className="w-[320px] pl-10"
                     value={search}
-                    onChange={(e) =>
-                      handleSearch(e.target.value)
-                    }
+                    onChange={(e) => setSearch(e.target.value)}
                   />
                 </div>
 

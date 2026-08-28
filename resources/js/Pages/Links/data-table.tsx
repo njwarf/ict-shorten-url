@@ -7,8 +7,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 
-import { ChevronLeft, ChevronRight } from "lucide-react"
-
 import {
   Table,
   TableBody,
@@ -21,8 +19,11 @@ import {
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 } from "@/Components/ui/pagination"
 
 interface PaginationData {
@@ -54,6 +55,41 @@ export function DataTable<TData, TValue>({
   })
 
   const currentPage = pagination.current_page
+  const lastPage = pagination.last_page
+
+  const getPageNumbers = () => {
+    if (lastPage <= 5) {
+      return Array.from(
+        { length: lastPage },
+        (_, index) => index + 1
+      )
+    }
+
+    if (currentPage <= 3) {
+      return [1, 2, 3, 4, "...", lastPage]
+    }
+
+    if (currentPage >= lastPage - 2) {
+      return [
+        1,
+        "...",
+        lastPage - 3,
+        lastPage - 2,
+        lastPage - 1,
+        lastPage,
+      ]
+    }
+
+    return [
+      1,
+      "...",
+      currentPage - 1,
+      currentPage,
+      currentPage + 1,
+      "...",
+      lastPage,
+    ]
+  }
 
   return (
     <div className="mt-6 overflow-hidden rounded-xl border bg-background">
@@ -113,6 +149,7 @@ export function DataTable<TData, TValue>({
 
       {/* FOOTER */}
       <div className="flex items-center justify-between border-t px-6 py-4 text-sm text-muted-foreground">
+
         {/* SHOWING */}
         <p>
           Showing {pagination.from ?? 0} to {pagination.to ?? 0} of{" "}
@@ -120,70 +157,71 @@ export function DataTable<TData, TValue>({
         </p>
 
         {/* PAGINATION */}
-        <Pagination className="mx-0 w-auto justify-end">
-          <PaginationContent>
+        {lastPage > 1 && (
+          <Pagination className="mx-0 w-auto justify-end">
+            <PaginationContent>
 
-            {/* LEFT */}
-            <PaginationItem>
-              <PaginationLink
-                href="#"
-                size="icon"
-                aria-label="Previous page"
-                onClick={(e) => {
-                  e.preventDefault()
+              {/* PREVIOUS */}
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault()
 
-                  if (currentPage > 1) {
-                    onPageChange(currentPage - 1)
+                    if (currentPage > 1) {
+                      onPageChange(currentPage - 1)
+                    }
+                  }}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : ""
                   }
-                }}
-                className={
-                  currentPage === 1
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </PaginationLink>
-            </PaginationItem>
+                />
+              </PaginationItem>
 
-            {/* CURRENT PAGE */}
-            <PaginationItem>
-              <PaginationLink
-                href="#"
-                size="icon"
-                isActive
-                onClick={(e) => e.preventDefault()}
-                className="bg-black text-white hover:bg-black hover:text-white"
-              >
-                {currentPage}
-              </PaginationLink>
-            </PaginationItem>
+              {/* PAGE NUMBERS */}
+              {getPageNumbers().map((page, index) => (
+                <PaginationItem key={`${page}-${index}`}>
+                  {page === "..." ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationLink
+                      href="#"
+                      isActive={page === currentPage}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        onPageChange(page as number)
+                      }}
+                    >
+                      {page}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))}
 
-            {/* RIGHT */}
-            <PaginationItem>
-              <PaginationLink
-                href="#"
-                size="icon"
-                aria-label="Next page"
-                onClick={(e) => {
-                  e.preventDefault()
+              {/* NEXT */}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault()
 
-                  if (currentPage < pagination.last_page) {
-                    onPageChange(currentPage + 1)
+                    if (currentPage < lastPage) {
+                      onPageChange(currentPage + 1)
+                    }
+                  }}
+                  className={
+                    currentPage === lastPage
+                      ? "pointer-events-none opacity-50"
+                      : ""
                   }
-                }}
-                className={
-                  currentPage === pagination.last_page
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              >
-                <ChevronRight className="h-4 w-4" />
-              </PaginationLink>
-            </PaginationItem>
+                />
+              </PaginationItem>
 
-          </PaginationContent>
-        </Pagination>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </div>
   )

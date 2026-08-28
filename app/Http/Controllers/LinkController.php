@@ -14,29 +14,28 @@ class LinkController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-        $links = Url::query()
-            ->where('user_id', auth()->id())
-            ->when($request->search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('title', 'like', "%{$search}%")
-                        ->orWhere('original_url', 'like', "%{$search}%")
-                        ->orWhere('short_code', 'like', "%{$search}%");
-                });
-            })
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+   public function index(Request $request)
+{
+    $links = Url::query()
+        ->where('user_id', auth()->id())
+        ->when($request->search, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('original_url', 'like', "%{$search}%")
+                    ->orWhere('short_code', 'like', "%{$search}%");
+            });
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
-        return Inertia::render('Links/Index', [
-            'links' => $links,
-            'filters' => [
-                'search' => $request->search,
-            ],
-        ]);
-    }
-
+    return Inertia::render('Links/Index', [
+        'links' => $links,
+        'filters' => [
+            'search' => $request->search,
+        ],
+    ]);
+}
     /**
      * Show the form for creating a new resource.
      */
