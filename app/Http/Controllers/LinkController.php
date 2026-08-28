@@ -5,27 +5,37 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Link\CreateLinkRequest;
 use App\Http\Requests\Link\UpdateLinkRequest;
 use App\Models\Url;
-use Inertia\Inertia;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class LinkController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-       $links = Url::query()
-    ->where('user_id', auth()->id())
-    ->latest()
-    ->get();
+   public function index(Request $request)
+{
+    $links = Url::query()
+        ->where('user_id', auth()->id())
+        ->when($request->search, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('original_url', 'like', "%{$search}%")
+                    ->orWhere('short_code', 'like', "%{$search}%");
+            });
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
     return Inertia::render('Links/Index', [
         'links' => $links,
+        'filters' => [
+            'search' => $request->search,
+        ],
     ]);
-
-    }
-
+}
     /**
      * Show the form for creating a new resource.
      */
@@ -39,19 +49,16 @@ class LinkController extends Controller
      */
     public function store(CreateLinkRequest $request)
     {
+        Url::create([
+            'id' => Str::uuid(),
+            'user_id' => auth()->id(),
+            'title' => $request->title,
+            'original_url' => $request->original_url,
+            'short_code' => $request->short_code ?? Str::random(6),
+        ]);
 
-
-
-    Url::create([
-        'id' => Str::uuid(),
-        'user_id' => auth()->id(),
-        'title' => $request->title,
-        'original_url' => $request->original_url,
-        'short_code' => $request->short_code ?? Str::random(6),
-    ]);
-
-   return to_route('links.index');
-}
+        return to_route('links.index');
+    }
 
     /**
      * Display the specified resource.
@@ -67,11 +74,12 @@ class LinkController extends Controller
     public function edit(string $id)
     {
         $link = Url::query()
-    ->where('user_id', auth()->id())
-    ->findOrFail($id);
-    return Inertia::render('Links/Form', [
-        'link' => $link,
-    ]);
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
+
+        return Inertia::render('Links/Form', [
+            'link' => $link,
+        ]);
     }
 
     /**
@@ -79,18 +87,17 @@ class LinkController extends Controller
      */
     public function update(UpdateLinkRequest $request, string $id)
     {
+        $link = Url::query()
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
 
+        $link->update([
+            'title' => $request->title,
+            'original_url' => $request->original_url,
+            'short_code' => $request->short_code,
+        ]);
 
-    $link = Url::query()
-    ->where('user_id', auth()->id())
-    ->findOrFail($id);
-    $link->update([
-        'title' => $request->title,
-        'original_url' => $request->original_url,
-        'short_code' => $request->short_code,
-    ]);
-
-    return redirect()->route('links.index');
+        return redirect()->route('links.index');
     }
 
     /**
@@ -99,19 +106,21 @@ class LinkController extends Controller
     public function destroy(string $id)
     {
         $link = Url::query()
-    ->where('user_id', auth()->id())
-    ->findOrFail($id);
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
 
-    $link->delete();
+        $link->delete();
 
-    return redirect()->route('links.index');
-
+        return redirect()->route('links.index');
     }
 
+    /**
+     * Redirect short URL to original URL.
+     */
     public function redirect(string $short_code)
-{
-    $url = Url::where('short_code', $short_code)->firstOrFail();
+    {
+        $url = Url::where('short_code', $short_code)->firstOrFail();
 
-    return redirect()->away($url->original_url);
-}
+        return redirect()->away($url->original_url);
+    }
 }

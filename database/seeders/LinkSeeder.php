@@ -16,7 +16,7 @@ class LinkSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::firstWhere('email', 'test@example.com');
+        $user = User::firstWhere('email', 'salwa@gmail.com');
 
         Url::factory(150)
             ->for($user ?? User::factory())
