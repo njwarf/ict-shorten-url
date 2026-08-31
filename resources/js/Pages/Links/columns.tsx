@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { router } from "@inertiajs/react";
 import {
   MoreHorizontal,
   Eye,
@@ -23,6 +24,7 @@ export type Link = {
   original_url: string;
   short_code: string;
   is_active: boolean;
+  is_pinned: boolean;
 
 };
 
@@ -126,7 +128,13 @@ export const columns: ColumnDef<Link>[] = [
               Edit
             </DropdownMenuItem>
 
-
+            <DropdownMenuItem
+              onClick={() =>
+                router.patch(`/links/${link.id}/toggle-pin`)
+              }
+            >
+              📌 {link.is_pinned ? "Unpin" : "Pin"}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
