@@ -28,7 +28,13 @@ export function NavLinks({ links, }: {
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+      <SidebarGroupLabel>Pinned Links</SidebarGroupLabel>
       <SidebarMenu>
+        {links.length < 1 && (
+          <p className="text-xs italic px-2 text-muted-foreground">
+            Create new link to pinned
+          </p>
+        )}
         {links.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>

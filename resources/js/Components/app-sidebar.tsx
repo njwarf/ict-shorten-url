@@ -1,7 +1,6 @@
 import * as React from "react"
 import { Link } from "@inertiajs/react";
 import { NavMain } from "@/Components/nav-main"
-import { NavLinks } from "@/Components/nav-links"
 import { NavSecondary } from "@/Components/nav-secondary"
 import { NavUser } from "@/Components/nav-user"
 import { usePage } from "@inertiajs/react"
@@ -127,6 +126,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
         {pinnedLinks.length > 0 && (
           <div className="px-2 py-2">
+            <p className="mb-2 px-2 text-xs font-medium text-muted-foreground">
+              Pinned Links
+            </p>
             <SidebarMenu>
               {pinnedLinks.map((link) => (
                 <SidebarMenuItem key={link.id}>
@@ -142,7 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </div>
         )}
 
-        <NavLinks links={data.projects} />
+
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
