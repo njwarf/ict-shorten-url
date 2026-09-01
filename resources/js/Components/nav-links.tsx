@@ -13,28 +13,22 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import {MoreHorizontalIcon, FolderIcon, ShareIcon, Trash2Icon, Link2} from "lucide-react"
+} from "@/Components/ui/sidebar"
+import { MoreHorizontalIcon, FolderIcon, ShareIcon, Trash2Icon, Link2 } from "lucide-react"
 import * as React from "react";
 
-export function NavLinks({links,}: {
+export function NavLinks({ links, }: {
   links: {
     name: string
     url: string
     icon: React.ReactNode
   }[]
 }) {
-  const {isMobile} = useSidebar()
+  const { isMobile } = useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Pinned Links</SidebarGroupLabel>
       <SidebarMenu>
-        {links.length < 1 && (
-          <p className="text-xs italic px-2 text-muted-foreground">
-            Create new link to pinned
-          </p>
-        )}
         {links.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
@@ -60,16 +54,16 @@ export function NavLinks({links,}: {
                 align={isMobile ? "end" : "start"}
               >
                 <DropdownMenuItem>
-                  <FolderIcon className="text-muted-foreground"/>
+                  <FolderIcon className="text-muted-foreground" />
                   <span>Open Link</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <ShareIcon className="text-muted-foreground"/>
+                  <ShareIcon className="text-muted-foreground" />
                   <span>Share Link</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator/>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Trash2Icon className="text-muted-foreground"/>
+                  <Trash2Icon className="text-muted-foreground" />
                   <span>Remove Link</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

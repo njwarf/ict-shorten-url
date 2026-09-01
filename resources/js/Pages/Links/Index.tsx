@@ -1,11 +1,11 @@
 import { AppSidebar } from "@/Components/app-sidebar";
 import { useEffect, useState } from "react";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { SiteHeader } from "@/Components/site-header";
 import {
   SidebarInset,
   SidebarProvider,
-} from "@/components/ui/sidebar";
+} from "@/Components/ui/sidebar";
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
 import { columns } from "./columns";
@@ -56,6 +56,12 @@ interface Props {
 }
 
 export default function Index({ links, filters }: Props) {
+  const { flash } = usePage().props as {
+    flash?: {
+      error?: string;
+      success?: string;
+    };
+  };
   const tableColumns = columns;
 
   const [search, setSearch] = useState(filters?.search ?? "");
@@ -183,6 +189,12 @@ export default function Index({ links, filters }: Props) {
                   </Button>
                 </div>
               </div>
+
+              {flash?.error && (
+                <div className="mb-4 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                  {flash.error}
+                </div>
+              )}
 
               {/* Data Table */}
               <DataTable

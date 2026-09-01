@@ -7,6 +7,7 @@ import {
   Eye,
   Share2,
   Pencil,
+  Pin,
 } from "lucide-react";
 
 import { Button } from "@/Components/ui/button";
@@ -133,7 +134,8 @@ export const columns: ColumnDef<Link>[] = [
                 router.patch(`/links/${link.id}/toggle-pin`)
               }
             >
-              📌 {link.is_pinned ? "Unpin" : "Pin"}
+              <Pin className="mr-2 h-4 w-4" />
+              {link.is_pinned ? "Unpin" : "Pin"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

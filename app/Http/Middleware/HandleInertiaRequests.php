@@ -35,6 +35,12 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+
+              'flash' => [
+                  'error' => fn () => $request->session()->get('error'),
+                  'success' => fn () => $request->session()->get('success'),
+            ],
+
             'pinnedLinks' => $request->user()
                 ? Url::query()
                     ->where('user_id', $request->user()->id)
