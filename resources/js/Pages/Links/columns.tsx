@@ -1,11 +1,13 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { router } from "@inertiajs/react";
 import {
   MoreHorizontal,
   Eye,
   Share2,
   Pencil,
+  Pin,
 } from "lucide-react";
 
 import { Button } from "@/Components/ui/button";
@@ -23,6 +25,7 @@ export type Link = {
   original_url: string;
   short_code: string;
   is_active: boolean;
+  is_pinned: boolean;
 
 };
 
@@ -126,7 +129,14 @@ export const columns: ColumnDef<Link>[] = [
               Edit
             </DropdownMenuItem>
 
-
+            <DropdownMenuItem
+              onClick={() =>
+                router.patch(`/links/${link.id}/toggle-pin`)
+              }
+            >
+              <Pin className="mr-2 h-4 w-4" />
+              {link.is_pinned ? "Unpin" : "Pin"}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

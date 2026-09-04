@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Url;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -34,6 +35,20 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+
+              'flash' => [
+                  'error' => fn () => $request->session()->get('error'),
+                  'success' => fn () => $request->session()->get('success'),
+            ],
+
+            'pinnedLinks' => $request->user()
+                ? Url::query()
+                    ->where('user_id', $request->user()->id)
+                    ->where('is_pinned', true)
+                    ->latest()
+                    ->limit(5)
+                    ->get(['id', 'title', 'short_code'])
+                : [],
         ];
     }
 }

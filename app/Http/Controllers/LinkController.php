@@ -113,6 +113,29 @@ class LinkController extends Controller
 
         return redirect()->route('links.index');
     }
+    public function togglePin(String $id)
+    {
+      $link =Url::query()
+      ->where('user_id', auth()->id())
+      ->findOrFail($id);
+
+      if (!$link->is_pinned) {
+        $pinnedCount = Url::query()
+        ->where('user_id', auth()->id())
+        ->where('is_pinned', true)
+        ->count();
+
+        if ($pinnedCount >= 5) {
+           return back()->with('error', 'Maksimal hanya 5 link yang dapat dipin.');
+        }
+      }
+
+      $link->update([
+        'is_pinned' => !$link->is_pinned,
+      ]);
+
+      return back();
+    }
 
     /**
      * Redirect short URL to original URL.

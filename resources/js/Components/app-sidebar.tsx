@@ -1,7 +1,6 @@
 import * as React from "react"
 import { Link } from "@inertiajs/react";
 import { NavMain } from "@/Components/nav-main"
-import { NavLinks } from "@/Components/nav-links"
 import { NavSecondary } from "@/Components/nav-secondary"
 import { NavUser } from "@/Components/nav-user"
 import { usePage } from "@inertiajs/react"
@@ -23,7 +22,14 @@ import {
   GraduationCapIcon,
   UsersIcon,
   BriefcaseIcon,
+  Pin,
 } from "lucide-react"
+
+type PinnedLink = {
+  id: string;
+  title: string;
+  short_code: string;
+};
 const data = {
   navMain: [
     {
@@ -89,7 +95,9 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = usePage().props.auth.user;
+  const page = usePage<any>();
+  const user = page.props.auth.user;
+  const pinnedLinks: PinnedLink[] = page.props.pinnedLinks ?? [];
   return (
     <Sidebar
       className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
@@ -115,7 +123,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavLinks links={data.projects} />
+
+        <div className="px-2 py-2">
+          <p className="mb-2 px-2 text-xs font-medium text-muted-foreground">
+            Pinned Links
+          </p>
+
+          <SidebarMenu>
+            {pinnedLinks.length < 1 && (
+              <p className="px-2 text-xs italic text-muted-foreground">
+                Create new link to pinned
+              </p>
+            )}
+
+            {pinnedLinks.map((link) => (
+              <SidebarMenuItem key={link.id}>
+                <SidebarMenuButton asChild>
+                  <Link href={`/links/${link.id}/edit`}>
+                    <Pin className="size-4" />
+                    <span className="truncate">{link.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </div>
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
