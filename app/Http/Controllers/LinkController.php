@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Link\CreateLinkRequest;
 use App\Http\Requests\Link\UpdateLinkRequest;
+use App\Models\ClickLog;
+use App\Models\UrlReferrer;
+use Illuminate\Support\Facades\DB;
 use App\Models\Url;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -143,6 +146,69 @@ class LinkController extends Controller
     public function redirect(string $short_code)
     {
         $url = Url::where('short_code', $short_code)->firstOrFail();
+
+         $ipAddress = request()->ip();
+    $userAgent = request()->userAgent();
+    $referrer = request()->headers->get('referer');
+
+    DB::transaction(function () use (
+        $url,
+        $ipAddress,
+        $userAgent,
+        $referrer
+    ) {
+        $referrerSlug = null;
+
+        if ($referrer) {
+            $referrerHost = parse_url($referrer, PHP_URL_HOST);
+
+            $referrerSlug = match (true) {
+                str_contains($referrerHost ?? '', 'facebook.com') => 'fb',
+                str_contains($referrerHost ?? '', 'instagram.com') => 'ig',
+                str_contains($referrerHost ?? '', 'youtube.com') => 'yt',
+                str_contains($referrerHost ?? '', 'tiktok.com') => 'tt',
+                str_contains($referrerHost ?? '', 'whatsapp.com') => 'wa',
+                default => null,
+            };
+        }
+
+        ClickLog::create([
+            'id' => Str::uuid(),
+            'url_id' => $url->id,
+            'referrer_slug' => $referrerSlug,
+            'user_agent' => $userAgent ?? 'Unknown',
+            'ip_address' => $ipAddress ?? 'Unknown',
+            'clicked_at' => now(),
+        ]);
+
+        $url->increment('click_count');
+
+        $url->update([
+            'last_clicked_at' => now(),
+            'unique_ip_count' => $url->clickLogs()
+                ->distinct('ip_address')
+                ->count('ip_address'),
+            'top_user_agent' => $url->clickLogs()
+                ->select('user_agent')
+                ->groupBy('user_agent')
+                ->orderByDesc(DB::raw('COUNT(*)'))
+                ->value('user_agent'),
+        ]);
+
+        if ($referrerSlug) {
+            $urlReferrer = UrlReferrer::where('url_id', $url->id)
+                ->where('referrer_slug', $referrerSlug)
+                ->first();
+
+            if ($urlReferrer) {
+                $urlReferrer->increment('click_count');
+
+                $urlReferrer->update([
+                    'last_clicked_at' => now(),
+                ]);
+            }
+        }
+    });
 
         return redirect()->away($url->original_url);
     }
