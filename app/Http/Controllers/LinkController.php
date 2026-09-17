@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Link\CreateLinkRequest;
 use App\Http\Requests\Link\UpdateLinkRequest;
+use App\Jobs\UpdateLinkAnalyticsJob;
 use App\Models\ClickLog;
 use App\Models\UrlReferrer;
 use Illuminate\Support\Facades\DB;
@@ -88,66 +89,11 @@ class LinkController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateLinkRequest $request, string $id)
-    {
-        $link = Url::query()
-            ->where('user_id', auth()->id())
-            ->findOrFail($id);
+   public function redirect(string $short_code)
+{
+    $url = Url::where('short_code', $short_code)->firstOrFail();
 
-        $link->update([
-            'title' => $request->title,
-            'original_url' => $request->original_url,
-            'short_code' => $request->short_code,
-        ]);
-
-        return redirect()->route('links.index');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $link = Url::query()
-            ->where('user_id', auth()->id())
-            ->findOrFail($id);
-
-        $link->delete();
-
-        return redirect()->route('links.index');
-    }
-    public function togglePin(String $id)
-    {
-      $link =Url::query()
-      ->where('user_id', auth()->id())
-      ->findOrFail($id);
-
-      if (!$link->is_pinned) {
-        $pinnedCount = Url::query()
-        ->where('user_id', auth()->id())
-        ->where('is_pinned', true)
-        ->count();
-
-        if ($pinnedCount >= 5) {
-           return back()->with('error', 'Maksimal hanya 5 link yang dapat dipin.');
-        }
-      }
-
-      $link->update([
-        'is_pinned' => !$link->is_pinned,
-      ]);
-
-      return back();
-    }
-
-    /**
-     * Redirect short URL to original URL.
-     */
-    public function redirect(string $short_code)
-    {
-        $url = Url::where('short_code', $short_code)->firstOrFail();
-
-         $ipAddress = request()->ip();
+    $ipAddress = request()->ip();
     $userAgent = request()->userAgent();
     $referrer = request()->headers->get('referer');
 
@@ -185,14 +131,6 @@ class LinkController extends Controller
 
         $url->update([
             'last_clicked_at' => now(),
-            'unique_ip_count' => $url->clickLogs()
-                ->distinct('ip_address')
-                ->count('ip_address'),
-            'top_user_agent' => $url->clickLogs()
-                ->select('user_agent')
-                ->groupBy('user_agent')
-                ->orderByDesc(DB::raw('COUNT(*)'))
-                ->value('user_agent'),
         ]);
 
         if ($referrerSlug) {
@@ -210,6 +148,44 @@ class LinkController extends Controller
         }
     });
 
-        return redirect()->away($url->original_url);
+    UpdateLinkAnalyticsJob::dispatch($url->id)->afterCommit();
+
+    return redirect()->away($url->original_url);
+}
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $link = Url::query()
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
+
+        $link->delete();
+
+        return redirect()->route('links.index');
+    }
+    public function togglePin(String $id)
+    {
+      $link =Url::query()
+      ->where('user_id', auth()->id())
+      ->findOrFail($id);
+
+      if (!$link->is_pinned) {
+        $pinnedCount = Url::query()
+        ->where('user_id', auth()->id())
+        ->where('is_pinned', true)
+        ->count();
+
+        if ($pinnedCount >= 5) {
+           return back()->with('error', 'Maksimal hanya 5 link yang dapat dipin.');
+        }
+      }
+
+      $link->update([
+        'is_pinned' => !$link->is_pinned,
+      ]);
+
+      return back();
     }
 }
