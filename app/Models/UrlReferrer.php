@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UrlReferrer extends Model
 {
-     use HasFactory;
+    use HasFactory;
 
     protected $guarded = [];
 

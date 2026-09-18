@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Link\CreateLinkRequest;
 use App\Http\Requests\Link\UpdateLinkRequest;
+use App\Jobs\UpdateLinkAnalyticsJob;
+use App\Models\ClickLog;
+use App\Models\UrlReferrer;
+use Illuminate\Support\Facades\DB;
 use App\Models\Url;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -85,21 +89,69 @@ class LinkController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateLinkRequest $request, string $id)
-    {
-        $link = Url::query()
-            ->where('user_id', auth()->id())
-            ->findOrFail($id);
+   public function redirect(string $short_code)
+{
+    $url = Url::where('short_code', $short_code)->firstOrFail();
 
-        $link->update([
-            'title' => $request->title,
-            'original_url' => $request->original_url,
-            'short_code' => $request->short_code,
+    $ipAddress = request()->ip();
+    $userAgent = request()->userAgent();
+    $referrer = request()->headers->get('referer');
+
+    DB::transaction(function () use (
+        $url,
+        $ipAddress,
+        $userAgent,
+        $referrer
+    ) {
+        $referrerSlug = null;
+
+        if ($referrer) {
+            $referrerHost = parse_url($referrer, PHP_URL_HOST);
+
+            $referrerSlug = match (true) {
+                str_contains($referrerHost ?? '', 'facebook.com') => 'fb',
+                str_contains($referrerHost ?? '', 'instagram.com') => 'ig',
+                str_contains($referrerHost ?? '', 'youtube.com') => 'yt',
+                str_contains($referrerHost ?? '', 'tiktok.com') => 'tt',
+                str_contains($referrerHost ?? '', 'whatsapp.com') => 'wa',
+                default => null,
+            };
+        }
+
+        ClickLog::create([
+            'id' => Str::uuid(),
+            'url_id' => $url->id,
+            'referrer_slug' => $referrerSlug,
+            'user_agent' => $userAgent ?? 'Unknown',
+            'ip_address' => $ipAddress ?? 'Unknown',
+            'clicked_at' => now(),
         ]);
 
-        return redirect()->route('links.index');
-    }
+        $url->increment('click_count');
 
+        $url->update([
+            'last_clicked_at' => now(),
+        ]);
+
+        if ($referrerSlug) {
+            $urlReferrer = UrlReferrer::where('url_id', $url->id)
+                ->where('referrer_slug', $referrerSlug)
+                ->first();
+
+            if ($urlReferrer) {
+                $urlReferrer->increment('click_count');
+
+                $urlReferrer->update([
+                    'last_clicked_at' => now(),
+                ]);
+            }
+        }
+    });
+
+    UpdateLinkAnalyticsJob::dispatch($url->id)->afterCommit();
+
+    return redirect()->away($url->original_url);
+}
     /**
      * Remove the specified resource from storage.
      */
@@ -135,15 +187,5 @@ class LinkController extends Controller
       ]);
 
       return back();
-    }
-
-    /**
-     * Redirect short URL to original URL.
-     */
-    public function redirect(string $short_code)
-    {
-        $url = Url::where('short_code', $short_code)->firstOrFail();
-
-        return redirect()->away($url->original_url);
     }
 }
