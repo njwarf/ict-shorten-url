@@ -2,6 +2,13 @@ import { AppSidebar } from "@/Components/app-sidebar"
 import { SiteHeader } from "@/Components/site-header"
 import { SidebarInset, SidebarProvider } from "@/Components/ui/sidebar"
 import { Link, usePage } from "@inertiajs/react"
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/Components/ui/chart"
 import {
   CalendarDays,
   ChevronDown,
@@ -43,15 +50,19 @@ type RecentActivity = {
   created_at: string
 }
 
+type ClicksByDate = {
+  date: string
+  clicks: number
+}
 type DashboardProps = {
   stats: DashboardStats
   topPerforming: TopPerformingLink[]
   recentActivity: RecentActivity[]
+  clicksByDate: ClicksByDate[]
 }
 
-
 export default function Page() {
-  const { stats, topPerforming, recentActivity } =
+  const { stats, topPerforming, recentActivity, clicksByDate } =
     usePage<DashboardProps>().props
 
   const statItems = [
@@ -77,7 +88,12 @@ export default function Page() {
       icon: Globe2,
     },
   ]
-
+  const chartConfig = {
+    clicks: {
+      label: "Clicks",
+      color: "hsl(var(--foreground))",
+    },
+  }
   return (
     <div className="[--header-height:calc(--spacing(14))]">
       <SidebarProvider className="flex flex-col">
@@ -195,221 +211,176 @@ export default function Page() {
                   </div>
 
                   <div className="px-4 pb-4 pt-3">
-                    <div className="h-[250px] w-full">
-                      <svg
-                        viewBox="0 0 700 250"
-                        className="h-full w-full"
-                        preserveAspectRatio="none"
+                    <ChartContainer
+                      config={chartConfig}
+                      className="h-[250px] w-full"
+                    >
+                      <AreaChart
+                        accessibilityLayer
+                        data={clicksByDate}
+                        margin={{
+                          left: 12,
+                          right: 12,
+                          top: 10,
+                          bottom: 10,
+                        }}
                       >
-                        {/* HORIZONTAL GRID */}
-                        <line
-                          x1="0"
-                          y1="35"
-                          x2="700"
-                          y2="35"
-                          stroke="currentColor"
-                          className="text-muted/30"
+                        <CartesianGrid vertical={false} />
+
+                        <XAxis
+                          dataKey="date"
+                          tickLine={false}
+                          axisLine={false}
+                          tickMargin={8}
+                          tickFormatter={(value) => {
+                            const date = new Date(value)
+
+                            return date.toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })
+                          }}
                         />
 
-                        <line
-                          x1="0"
-                          y1="90"
-                          x2="700"
-                          y2="90"
-                          stroke="currentColor"
-                          className="text-muted/30"
+                        <ChartTooltip
+                          cursor={false}
+                          content={<ChartTooltipContent />}
                         />
 
-                        <line
-                          x1="0"
-                          y1="145"
-                          x2="700"
-                          y2="145"
-                          stroke="currentColor"
-                          className="text-muted/30"
+                        <Area
+                          dataKey="clicks"
+                          type="natural"
+                          fill="var(--color-clicks)"
+                          fillOpacity={0.25}
+                          stroke="var(--color-clicks)"
+                          strokeWidth={2}
                         />
+                      </AreaChart>
+                    </ChartContainer>
+                    {/* TOP PERFORMING */}
+                    <div className="rounded-lg border bg-background shadow-sm">
+                      <div className="border-b px-4 py-3.5">
+                        <h2 className="text-sm font-semibold">
+                          Top Performing
+                        </h2>
+                      </div>
 
-                        <line
-                          x1="0"
-                          y1="200"
-                          x2="700"
-                          y2="200"
-                          stroke="currentColor"
-                          className="text-muted/30"
-                        />
+                      <div>
+                        {topPerforming.map((item, index) => (
+                          <div
+                            key={item.id}
+                            className="flex min-h-[56px] items-center gap-3 border-b px-3 last:border-b-0"
+                          >
+                            {/* RANK */}
+                            <div className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-muted text-[9px] font-medium">
+                              {index + 1}
+                            </div>
 
-                        {/* AREA */}
-                        <path
-                          d="
-                            M0 205
-                            C28 175 55 170 82 179
-                            C108 188 126 201 153 197
-                            C184 192 199 169 220 143
-                            C243 114 263 83 291 80
-                            C319 77 339 104 365 119
-                            C391 134 411 126 430 101
-                            C451 74 466 38 493 27
-                            C519 16 541 24 559 43
-                            C580 65 594 87 618 84
-                            C644 81 660 60 680 45
-                            C689 38 696 34 700 32
-                            L700 205
-                            L0 205
-                            Z
-                          "
-                          fill="#eeeeee"
-                          className="text-muted/20"
-                        />
+                            {/* LINK + TITLE */}
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-[9px] font-normal text-muted-foreground">
+                                {window.location.origin}/{item.short_code}
+                              </p>
 
-                        {/* MAIN GRAPH */}
-                        <path
-                          d="
-                            M0 205
-                            C28 175 55 170 82 179
-                            C108 188 126 201 153 197
-                            C184 192 199 169 220 143
-                            C243 114 263 83 291 80
-                            C319 77 339 104 365 119
-                            C391 134 411 126 430 101
-                            C451 74 466 38 493 27
-                            C519 16 541 24 559 43
-                            C580 65 594 87 618 84
-                            C644 81 660 60 680 45
-                            C689 38 696 34 700 32
-                          "
-                          fill="none"
-                          stroke="currentColor"
-                          className="text-foreground"
-                          strokeWidth="4"
-                          strokeLinecap="round"
-                        />
-                      </svg>
+                              <p className="truncate text-[9px] text-muted-foreground">
+                                {item.title}
+                              </p>
+                            </div>
+
+                            {/* CLICKS */}
+                            <span className="shrink-0 text-[9px] font-medium">
+                              {item.click_count.toLocaleString()}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* TOP PERFORMING */}
-                <div className="rounded-lg border bg-background shadow-sm">
-                  <div className="border-b px-4 py-3.5">
-                    <h2 className="text-sm font-semibold">
-                      Top Performing
-                    </h2>
-                  </div>
+                  {/* RECENT ACTIVITY */}
+                  <div className="rounded-lg border bg-background shadow-sm">
+                    <div className="flex items-center justify-between border-b px-4 py-3.5">
+                      <h2 className="text-sm font-semibold">
+                        Recent Activity
+                      </h2>
 
-                  <div>
-                    {topPerforming.map((item, index) => (
-                      <div
-                        key={item.id}
-                        className="flex min-h-[56px] items-center gap-3 border-b px-3 last:border-b-0"
+                      <Link
+                        href="/links"
+                        className="text-[10px] font-normal text-muted-foreground hover:underline"
                       >
-                        {/* RANK */}
-                        <div className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-muted text-[9px] font-medium">
-                          {index + 1}
-                        </div>
+                        View All
+                      </Link>
+                    </div>
 
-                        {/* LINK + TITLE */}
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-[9px] font-normal text-muted-foreground">
-                            {window.location.origin}/{item.short_code}
-                          </p>
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[650px] text-left">
+                        <thead>
+                          <tr className="border-b bg-muted/20">
+                            <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                              Short Link
+                            </th>
 
-                          <p className="truncate text-[9px] text-muted-foreground">
-                            {item.title}
-                          </p>
-                        </div>
+                            <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                              Original URL
+                            </th>
 
-                        {/* CLICKS */}
-                        <span className="shrink-0 text-[9px] font-medium">
-                          {item.click_count.toLocaleString()}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                            <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                              Status
+                            </th>
 
-              {/* RECENT ACTIVITY */}
-              <div className="rounded-lg border bg-background shadow-sm">
-                <div className="flex items-center justify-between border-b px-4 py-3.5">
-                  <h2 className="text-sm font-semibold">
-                    Recent Activity
-                  </h2>
+                            <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                              Clicks
+                            </th>
 
-                  <Link
-                    href="/links"
-                    className="text-[10px] font-normal text-muted-foreground hover:underline"
-                  >
-                    View All
-                  </Link>
-                </div>
+                            <th className="px-4 py-2 text-right text-[9px] font-medium uppercase text-muted-foreground">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[650px] text-left">
-                    <thead>
-                      <tr className="border-b bg-muted/20">
-                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
-                          Short Link
-                        </th>
-
-                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
-                          Original URL
-                        </th>
-
-                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
-                          Status
-                        </th>
-
-                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
-                          Clicks
-                        </th>
-
-                        <th className="px-4 py-2 text-right text-[9px] font-medium uppercase text-muted-foreground">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {recentActivity.map((activity) => (
-                        <tr
-                          key={activity.id}
-                          className="border-b last:border-b-0"
-                        >
-                          <td className="px-4 py-3 text-[10px] font-normal text-muted-foreground">
-                            {window.location.origin}/{activity.short_code}
-                          </td>
-
-                          <td className="max-w-[280px] truncate px-4 py-3 text-[10px] text-muted-foreground">
-                            {activity.original_url}
-                          </td>
-
-                          <td className="px-4 py-3">
-                            <span className="inline-flex items-center gap-1 rounded bg-muted px-2 py-1 text-[9px] font-medium">
-                              <span className="size-1.5 rounded-full bg-foreground" />
-                              {activity.is_active ? "Active" : "Inactive"}
-                            </span>
-                          </td>
-
-                          <td className="px-4 py-3 text-[10px]">
-                            {activity.click_count.toLocaleString()}
-                          </td>
-
-                          <td className="px-4 py-3 text-right">
-                            <button
-                              type="button"
-                              aria-label={`Copy ${activity.short_code}`}
-                              className="inline-flex size-7 items-center justify-center rounded-md hover:bg-muted"
+                        <tbody>
+                          {recentActivity.map((activity) => (
+                            <tr
+                              key={activity.id}
+                              className="border-b last:border-b-0"
                             >
-                              <Copy className="size-3.5" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                              <td className="px-4 py-3 text-[10px] font-normal text-muted-foreground">
+                                {window.location.origin}/{activity.short_code}
+                              </td>
+
+                              <td className="max-w-[280px] truncate px-4 py-3 text-[10px] text-muted-foreground">
+                                {activity.original_url}
+                              </td>
+
+                              <td className="px-4 py-3">
+                                <span className="inline-flex items-center gap-1 rounded bg-muted px-2 py-1 text-[9px] font-medium">
+                                  <span className="size-1.5 rounded-full bg-foreground" />
+                                  {activity.is_active ? "Active" : "Inactive"}
+                                </span>
+                              </td>
+
+                              <td className="px-4 py-3 text-[10px]">
+                                {activity.click_count.toLocaleString()}
+                              </td>
+
+                              <td className="px-4 py-3 text-right">
+                                <button
+                                  type="button"
+                                  aria-label={`Copy ${activity.short_code}`}
+                                  className="inline-flex size-7 items-center justify-center rounded-md hover:bg-muted"
+                                >
+                                  <Copy className="size-3.5" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
                 </div>
               </div>
-
             </main>
           </SidebarInset>
         </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClickLog;
 use App\Models\Url;
 use App\Models\UrlReferrer;
 use Inertia\Inertia;
@@ -53,6 +54,23 @@ class DashboardController extends Controller
                 'created_at',
             ]);
 
+        // Data klik per hari untuk Area Chart
+        $clicksByDate = ClickLog::query()
+            ->whereHas('url', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->selectRaw('DATE(clicked_at) as date, COUNT(*) as clicks')
+            ->groupByRaw('DATE(clicked_at)')
+            ->orderBy('date')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'date' => $item->date,
+                    'clicks' => (int) $item->clicks,
+                ];
+            })
+            ->values();
+
         return Inertia::render('Dashboard', [
             'stats' => [
                 'totalClicks' => $totalClicks,
@@ -62,6 +80,7 @@ class DashboardController extends Controller
             ],
             'topPerforming' => $topPerforming,
             'recentActivity' => $recentActivity,
+            'clicksByDate' => $clicksByDate,
         ]);
     }
 }
