@@ -1,7 +1,7 @@
 import { AppSidebar } from "@/Components/app-sidebar"
 import { SiteHeader } from "@/Components/site-header"
 import { SidebarInset, SidebarProvider } from "@/Components/ui/sidebar"
-import { Link } from "@inertiajs/react"
+import { Link, usePage } from "@inertiajs/react"
 import {
   CalendarDays,
   ChevronDown,
@@ -18,77 +18,66 @@ export const iframeHeight = "800px"
 export const description =
   "Dashboard overview with link performance statistics."
 
-const stats = [
-  {
-    title: "Total Clicks",
-    value: "124.8k",
-    change: "+12%",
-    icon: MousePointerClick,
-    sparkline: true,
-  },
-  {
-    title: "Active Links",
-    value: "1,240",
-    change: "+8.2%",
-    icon: Link2,
-  },
-  {
-    title: "Avg. CTR",
-    value: "4.2%",
-    change: "+0.5%",
-    icon: Percent,
-  },
-  {
-    title: "Top Source",
-    value: "Indonesia",
-    icon: Globe2,
-  },
-]
+type DashboardStats = {
+  totalClicks: number
+  activeLinks: number
+  averageClicks: number
+  topSource: string
+}
 
-const topPerforming = [
-  {
-    rank: 1,
-    url: "ict.st/qt2-rpt",
-    title: "Q2 Financial Report",
-    clicks: "12.4k",
-  },
-  {
-    rank: 2,
-    url: "ict.st/promo-x",
-    title: "Summer Promo Tw...",
-    clicks: "8.2k",
-  },
-  {
-    rank: 3,
-    url: "ict.st/app-dl",
-    title: "App Download Page",
-    clicks: "5.1k",
-  },
-  {
-    rank: 4,
-    url: "ict.st/blog-42",
-    title: "Blog Post 42",
-    clicks: "3.8k",
-  },
-]
+type TopPerformingLink = {
+  id: string
+  title: string
+  original_url: string
+  short_code: string
+  click_count: number
+}
 
-const recentActivity = [
-  {
-    shortLink: "ict.st/new-feature",
-    originalUrl: "https://example.com/features/new-release-v2",
-    status: "Active",
-    clicks: "12",
-  },
-  {
-    shortLink: "ict.st/webinar-reg",
-    originalUrl:
-      "https://example.com/events/webinar-registration-aug...",
-    status: "Active",
-    clicks: "84",
-  },
-]
+type RecentActivity = {
+  id: string
+  title: string
+  original_url: string
+  short_code: string
+  is_active: boolean
+  click_count: number
+  created_at: string
+}
+
+type DashboardProps = {
+  stats: DashboardStats
+  topPerforming: TopPerformingLink[]
+  recentActivity: RecentActivity[]
+}
+
 
 export default function Page() {
+  const { stats, topPerforming, recentActivity } =
+    usePage<DashboardProps>().props
+
+  const statItems = [
+    {
+      title: "Total Clicks",
+      value: stats.totalClicks.toLocaleString(),
+      icon: MousePointerClick,
+      sparkline: true,
+    },
+    {
+      title: "Active Links",
+      value: stats.activeLinks.toLocaleString(),
+      icon: Link2,
+    },
+    {
+      title: "Avg. Clicks/Link",
+      value: stats.averageClicks.toLocaleString(),
+      icon: Percent,
+    },
+    {
+      title: "Top Source",
+      value: stats.topSource,
+      icon: Globe2,
+    },
+  ]
+
   return (
     <div className="[--header-height:calc(--spacing(14))]">
       <SidebarProvider className="flex flex-col">
@@ -134,7 +123,7 @@ export default function Page() {
 
               {/* STATISTICS */}
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {stats.map((stat) => {
+                {statItems.map((stat) => {
                   const Icon = stat.icon
 
                   return (
@@ -308,20 +297,20 @@ export default function Page() {
                   </div>
 
                   <div>
-                    {topPerforming.map((item) => (
+                    {topPerforming.map((item, index) => (
                       <div
-                        key={item.rank}
+                        key={item.id}
                         className="flex min-h-[56px] items-center gap-3 border-b px-3 last:border-b-0"
                       >
                         {/* RANK */}
                         <div className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-muted text-[9px] font-medium">
-                          {item.rank}
+                          {index + 1}
                         </div>
 
                         {/* LINK + TITLE */}
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-[9px] font-normal text-muted-foreground">
-                            {item.url}
+                            {window.location.origin}/{item.short_code}
                           </p>
 
                           <p className="truncate text-[9px] text-muted-foreground">
@@ -331,7 +320,7 @@ export default function Page() {
 
                         {/* CLICKS */}
                         <span className="shrink-0 text-[9px] font-medium">
-                          {item.clicks}
+                          {item.click_count.toLocaleString()}
                         </span>
                       </div>
                     ))}
@@ -383,32 +372,32 @@ export default function Page() {
                     <tbody>
                       {recentActivity.map((activity) => (
                         <tr
-                          key={activity.shortLink}
+                          key={activity.id}
                           className="border-b last:border-b-0"
                         >
                           <td className="px-4 py-3 text-[10px] font-normal text-muted-foreground">
-                            {activity.shortLink}
+                            {window.location.origin}/{activity.short_code}
                           </td>
 
                           <td className="max-w-[280px] truncate px-4 py-3 text-[10px] text-muted-foreground">
-                            {activity.originalUrl}
+                            {activity.original_url}
                           </td>
 
                           <td className="px-4 py-3">
                             <span className="inline-flex items-center gap-1 rounded bg-muted px-2 py-1 text-[9px] font-medium">
                               <span className="size-1.5 rounded-full bg-foreground" />
-                              {activity.status}
+                              {activity.is_active ? "Active" : "Inactive"}
                             </span>
                           </td>
 
                           <td className="px-4 py-3 text-[10px]">
-                            {activity.clicks}
+                            {activity.click_count.toLocaleString()}
                           </td>
 
                           <td className="px-4 py-3 text-right">
                             <button
                               type="button"
-                              aria-label={`Copy ${activity.shortLink}`}
+                              aria-label={`Copy ${activity.short_code}`}
                               className="inline-flex size-7 items-center justify-center rounded-md hover:bg-muted"
                             >
                               <Copy className="size-3.5" />
