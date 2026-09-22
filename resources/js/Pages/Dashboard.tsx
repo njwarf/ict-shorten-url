@@ -200,10 +200,10 @@ export default function Page() {
               </div>
 
               {/* CHART + TOP PERFORMING */}
-              <div className="grid gap-4 lg:grid-cols-[1.8fr_1fr]">
+              <div className="grid w-full min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
 
                 {/* LINK PERFORMANCE CHART */}
-                <div className="rounded-lg border bg-background shadow-sm">
+                <div className="min-w-0 overflow-hidden rounded-lg border bg-background shadow-sm">
                   <div className="border-b px-4 py-3.5">
                     <h2 className="text-sm font-semibold">
                       Link Performance Over Time
@@ -213,7 +213,7 @@ export default function Page() {
                   <div className="px-4 pb-4 pt-3">
                     <ChartContainer
                       config={chartConfig}
-                      className="h-[250px] w-full"
+                      className="h-[250px] w-full min-w-0"
                     >
                       <AreaChart
                         accessibilityLayer
@@ -257,128 +257,128 @@ export default function Page() {
                         />
                       </AreaChart>
                     </ChartContainer>
-                    {/* TOP PERFORMING */}
-                    <div className="rounded-lg border bg-background shadow-sm">
-                      <div className="border-b px-4 py-3.5">
-                        <h2 className="text-sm font-semibold">
-                          Top Performing
-                        </h2>
-                      </div>
+                  </div>
+                </div>
 
-                      <div>
-                        {topPerforming.map((item, index) => (
-                          <div
-                            key={item.id}
-                            className="flex min-h-[56px] items-center gap-3 border-b px-3 last:border-b-0"
-                          >
-                            {/* RANK */}
-                            <div className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-muted text-[9px] font-medium">
-                              {index + 1}
-                            </div>
-
-                            {/* LINK + TITLE */}
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate text-[9px] font-normal text-muted-foreground">
-                                {window.location.origin}/{item.short_code}
-                              </p>
-
-                              <p className="truncate text-[9px] text-muted-foreground">
-                                {item.title}
-                              </p>
-                            </div>
-
-                            {/* CLICKS */}
-                            <span className="shrink-0 text-[9px] font-medium">
-                              {item.click_count.toLocaleString()}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                {/* TOP PERFORMING */}
+                <div className="min-w-0 overflow-hidden rounded-lg border bg-background shadow-sm">
+                  <div className="border-b px-4 py-3.5">
+                    <h2 className="text-sm font-semibold">
+                      Top Performing
+                    </h2>
                   </div>
 
-                  {/* RECENT ACTIVITY */}
-                  <div className="rounded-lg border bg-background shadow-sm">
-                    <div className="flex items-center justify-between border-b px-4 py-3.5">
-                      <h2 className="text-sm font-semibold">
-                        Recent Activity
-                      </h2>
-
-                      <Link
-                        href="/links"
-                        className="text-[10px] font-normal text-muted-foreground hover:underline"
+                  <div>
+                    {topPerforming.map((item, index) => (
+                      <div
+                        key={item.id}
+                        className="flex min-h-[56px] items-center gap-3 border-b px-3 last:border-b-0"
                       >
-                        View All
-                      </Link>
-                    </div>
+                        {/* RANK */}
+                        <div className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-muted text-[9px] font-medium">
+                          {index + 1}
+                        </div>
 
-                    <div className="overflow-x-auto">
-                      <table className="w-full min-w-[650px] text-left">
-                        <thead>
-                          <tr className="border-b bg-muted/20">
-                            <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
-                              Short Link
-                            </th>
+                        {/* LINK + TITLE */}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[9px] font-normal text-muted-foreground">
+                            {window.location.origin}/{item.short_code}
+                          </p>
 
-                            <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
-                              Original URL
-                            </th>
+                          <p className="truncate text-[9px] text-muted-foreground">
+                            {item.title}
+                          </p>
+                        </div>
 
-                            <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
-                              Status
-                            </th>
-
-                            <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
-                              Clicks
-                            </th>
-
-                            <th className="px-4 py-2 text-right text-[9px] font-medium uppercase text-muted-foreground">
-                              Actions
-                            </th>
-                          </tr>
-                        </thead>
-
-                        <tbody>
-                          {recentActivity.map((activity) => (
-                            <tr
-                              key={activity.id}
-                              className="border-b last:border-b-0"
-                            >
-                              <td className="px-4 py-3 text-[10px] font-normal text-muted-foreground">
-                                {window.location.origin}/{activity.short_code}
-                              </td>
-
-                              <td className="max-w-[280px] truncate px-4 py-3 text-[10px] text-muted-foreground">
-                                {activity.original_url}
-                              </td>
-
-                              <td className="px-4 py-3">
-                                <span className="inline-flex items-center gap-1 rounded bg-muted px-2 py-1 text-[9px] font-medium">
-                                  <span className="size-1.5 rounded-full bg-foreground" />
-                                  {activity.is_active ? "Active" : "Inactive"}
-                                </span>
-                              </td>
-
-                              <td className="px-4 py-3 text-[10px]">
-                                {activity.click_count.toLocaleString()}
-                              </td>
-
-                              <td className="px-4 py-3 text-right">
-                                <button
-                                  type="button"
-                                  aria-label={`Copy ${activity.short_code}`}
-                                  className="inline-flex size-7 items-center justify-center rounded-md hover:bg-muted"
-                                >
-                                  <Copy className="size-3.5" />
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                        {/* CLICKS */}
+                        <span className="shrink-0 text-[9px] font-medium">
+                          {item.click_count.toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
                   </div>
+                </div>
+              </div>
 
+              {/* RECENT ACTIVITY */}
+              <div className="w-full min-w-0 overflow-hidden rounded-lg border bg-background shadow-sm">
+                <div className="flex items-center justify-between border-b px-4 py-3.5">
+                  <h2 className="text-sm font-semibold">
+                    Recent Activity
+                  </h2>
+
+                  <Link
+                    href="/links"
+                    className="text-[10px] font-normal text-muted-foreground hover:underline"
+                  >
+                    View All
+                  </Link>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[650px] text-left">
+                    <thead>
+                      <tr className="border-b bg-muted/20">
+                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                          Short Link
+                        </th>
+
+                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                          Original URL
+                        </th>
+
+                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                          Status
+                        </th>
+
+                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                          Clicks
+                        </th>
+
+                        <th className="px-4 py-2 text-right text-[9px] font-medium uppercase text-muted-foreground">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {recentActivity.map((activity) => (
+                        <tr
+                          key={activity.id}
+                          className="border-b last:border-b-0"
+                        >
+                          <td className="px-4 py-3 text-[10px] font-normal text-muted-foreground">
+                            {window.location.origin}/{activity.short_code}
+                          </td>
+
+                          <td className="max-w-[280px] truncate px-4 py-3 text-[10px] text-muted-foreground">
+                            {activity.original_url}
+                          </td>
+
+                          <td className="px-4 py-3">
+                            <span className="inline-flex items-center gap-1 rounded bg-muted px-2 py-1 text-[9px] font-medium">
+                              <span className="size-1.5 rounded-full bg-foreground" />
+                              {activity.is_active ? "Active" : "Inactive"}
+                            </span>
+                          </td>
+
+                          <td className="px-4 py-3 text-[10px]">
+                            {activity.click_count.toLocaleString()}
+                          </td>
+
+                          <td className="px-4 py-3 text-right">
+                            <button
+                              type="button"
+                              aria-label={`Copy ${activity.short_code}`}
+                              className="inline-flex size-7 items-center justify-center rounded-md hover:bg-muted"
+                            >
+                              <Copy className="size-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </main>
