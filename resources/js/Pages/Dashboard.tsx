@@ -70,7 +70,6 @@ export default function Page() {
       title: "Total Clicks",
       value: stats.totalClicks.toLocaleString(),
       icon: MousePointerClick,
-      sparkline: true,
     },
     {
       title: "Active Links",
@@ -91,7 +90,7 @@ export default function Page() {
   const chartConfig = {
     clicks: {
       label: "Clicks",
-      color: "hsl(var(--foreground))",
+      color: "var(--foreground)",
     },
   }
   return (
@@ -153,7 +152,7 @@ export default function Page() {
                           {stat.title}
                         </p>
 
-                        <Icon className="size-3.5 text-black" />
+                        <Icon className="size-3.5 text-muted-foreground" />
                       </div>
 
                       {/* VALUE */}
@@ -168,32 +167,6 @@ export default function Page() {
                           </span>
                         )}
                       </div>
-
-                      {/* MINI GRAPH - TOTAL CLICKS */}
-                      {stat.sparkline && (
-                        <svg
-                          viewBox="0 0 180 45"
-                          className="absolute bottom-0 left-0 h-[42px] w-[150px]"
-                          preserveAspectRatio="none"
-                        >
-                          <path
-                            d="
-                              M0 28
-                              C10 25 18 27 27 32
-                              C38 38 46 38 56 31
-                              C67 23 72 17 82 21
-                              C92 25 96 39 106 38
-                              C116 37 119 20 128 13
-                              C138 5 146 11 153 24
-                              C160 37 168 39 180 25
-                            "
-                            fill="none"
-                            stroke="currentColor"
-                            className="text-muted-foreground/40"
-                            strokeWidth="2"
-                          />
-                        </svg>
-                      )}
                     </div>
                   )
                 })}
