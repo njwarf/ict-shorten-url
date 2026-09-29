@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider } from "@/Components/ui/sidebar"
 import { Link, router, usePage } from "@inertiajs/react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { differenceInCalendarDays, format } from "date-fns"
 import { Calendar } from "@/Components/ui/calendar"
 import {
@@ -70,6 +70,8 @@ type DashboardProps = {
   topPerforming: TopPerformingLink[]
   recentActivity: RecentActivity[]
   clicksByDate: ClicksByDate[]
+  start_date?: string
+  end_date?: string
   auth: {
     user: User
   }
@@ -85,6 +87,8 @@ export default function Page() {
     topPerforming,
     recentActivity,
     clicksByDate,
+    start_date,
+    end_date,
     auth,
   } = usePage<DashboardProps>().props
 
@@ -95,6 +99,15 @@ export default function Page() {
     from: new Date(new Date().setDate(new Date().getDate() - 29)),
     to: new Date(),
   })
+
+  useEffect(() => {
+    if (start_date && end_date) {
+      setDateRange({
+        from: new Date(start_date),
+        to: new Date(end_date),
+      })
+    }
+  }, [start_date, end_date])
 
   const totalDays =
     differenceInCalendarDays(dateRange.to, dateRange.from) + 1

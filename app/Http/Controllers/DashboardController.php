@@ -42,10 +42,9 @@ class DashboardController extends Controller
             ->distinct('url_id')
             ->count('url_id');
 
-        $averageClicks = $activeLinks > 0
-            ? $totalClicks / $activeLinks
-            : 0;
-
+      $averageClicks = $activeLinks > 0
+    ? round($totalClicks / $activeLinks, 2)
+    : 0;
         $topSource = UrlReferrer::query()
             ->whereHas('url', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
@@ -90,16 +89,22 @@ class DashboardController extends Controller
             })
             ->values();
 
-        return Inertia::render('Dashboard', [
             'stats' => [
                 'totalClicks' => $totalClicks,
                 'activeLinks' => $activeLinks,
                 'averageClicks' => $averageClicks,
-                'topSource' => $topSource?->referrer_slug ?? '-',
-            ],
-            'topPerforming' => $topPerforming,
-            'recentActivity' => $recentActivity,
-            'clicksByDate' => $clicksByDate,
-        ]);
+       return Inertia::render('Dashboard', [
+    'stats' => [
+        'totalClicks' => $totalClicks,
+        'activeLinks' => $activeLinks,
+        'averageClicks' => $averageClicks,
+        'topSource' => $topSource?->referrer_slug ?? '-',
+    ],
+    'topPerforming' => $topPerforming,
+    'recentActivity' => $recentActivity,
+    'clicksByDate' => $clicksByDate,
+    'start_date' => $startDate->toDateString(),
+    'end_date' => $endDate->toDateString(),
+]);
     }
 }
