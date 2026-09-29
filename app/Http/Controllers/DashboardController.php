@@ -89,10 +89,6 @@ class DashboardController extends Controller
             })
             ->values();
 
-            'stats' => [
-                'totalClicks' => $totalClicks,
-                'activeLinks' => $activeLinks,
-                'averageClicks' => $averageClicks,
        return Inertia::render('Dashboard', [
     'stats' => [
         'totalClicks' => $totalClicks,
