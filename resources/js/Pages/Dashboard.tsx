@@ -1,8 +1,18 @@
 import { AppSidebar } from "@/Components/app-sidebar"
 import { SiteHeader } from "@/Components/site-header"
 import { SidebarInset, SidebarProvider } from "@/Components/ui/sidebar"
-import { Link, usePage } from "@inertiajs/react"
+import { Link, router, usePage } from "@inertiajs/react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+
+import { useState } from "react"
+import { differenceInCalendarDays, format } from "date-fns"
+import { Calendar } from "@/Components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/Components/ui/popover"
+import { cn } from "@/lib/utils"
 
 import {
   ChartContainer,
@@ -24,6 +34,7 @@ export const iframeHeight = "800px"
 
 export const description =
   "Dashboard overview with link performance statistics."
+
 
 type DashboardStats = {
   totalClicks: number
@@ -59,11 +70,34 @@ type DashboardProps = {
   topPerforming: TopPerformingLink[]
   recentActivity: RecentActivity[]
   clicksByDate: ClicksByDate[]
+  auth: {
+    user: User
+  }
+}
+
+type User = {
+  name: string
 }
 
 export default function Page() {
-  const { stats, topPerforming, recentActivity, clicksByDate } =
-    usePage<DashboardProps>().props
+  const {
+    stats,
+    topPerforming,
+    recentActivity,
+    clicksByDate,
+    auth,
+  } = usePage<DashboardProps>().props
+
+  const [dateRange, setDateRange] = useState<{
+    from: Date
+    to: Date
+  }>({
+    from: new Date(new Date().setDate(new Date().getDate() - 29)),
+    to: new Date(),
+  })
+
+  const totalDays =
+    differenceInCalendarDays(dateRange.to, dateRange.from) + 1
 
   const statItems = [
     {
@@ -108,24 +142,63 @@ export default function Page() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h1 className="text-xl font-semibold tracking-tight">
-                    Welcome back, User Name
+                    Welcome back, {auth.user.name}
                   </h1>
 
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Here is a summary of your link performance for the last 30 days.
+                    Here is a summary of your link performance for the last {totalDays} days.
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    className="inline-flex h-9 items-center gap-2 rounded-md border bg-background px-3 text-sm font-medium shadow-sm transition-colors hover:bg-muted"
-                  >
-                    <CalendarDays className="size-4" />
-                    <span>Last 30 Days</span>
-                    <ChevronDown className="size-3.5" />
-                  </button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className={cn(
+                          "inline-flex h-9 items-center gap-2 rounded-md border bg-background px-3 text-sm font-medium shadow-sm transition-colors hover:bg-muted",
+                          !dateRange && "text-muted-foreground",
+                        )}
+                      >
+                        <CalendarDays className="size-4" />
 
+                        <span>
+                          {format(dateRange.from, "MMM d, yyyy")} -{" "}
+                          {format(dateRange.to, "MMM d, yyyy")}
+                        </span>
+
+                        <ChevronDown className="size-3.5" />
+                      </button>
+                    </PopoverTrigger>
+
+                    <PopoverContent className="w-auto p-0" align="end">
+                      <Calendar
+                        mode="range"
+                        selected={dateRange}
+                        onSelect={(range) => {
+                          if (range?.from && range?.to) {
+                            setDateRange({
+                              from: range.from,
+                              to: range.to,
+                            })
+
+                            router.get(
+                              route("dashboard"),
+                              {
+                                start_date: format(range.from, "yyyy-MM-dd"),
+                                end_date: format(range.to, "yyyy-MM-dd"),
+                              },
+                              {
+                                preserveState: true,
+                                preserveScroll: true,
+                              },
+                            )
+                          }
+                        }}
+                        numberOfMonths={2}
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <Link
                     href="/links/create"
                     className="inline-flex h-9 items-center gap-2 rounded-md bg-foreground px-3 text-sm font-medium text-background shadow-sm transition-opacity hover:opacity-90"
@@ -248,23 +321,23 @@ export default function Page() {
                         className="flex min-h-[56px] items-center gap-3 border-b px-3 last:border-b-0"
                       >
                         {/* RANK */}
-                        <div className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-muted text-[9px] font-medium">
+                        <div className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-muted text-xs font-medium">
                           {index + 1}
                         </div>
 
                         {/* LINK + TITLE */}
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[9px] font-normal text-muted-foreground">
+                          <p className="truncate text-xs font-normal text-muted-foreground">
                             {window.location.origin}/{item.short_code}
                           </p>
 
-                          <p className="truncate text-[9px] text-muted-foreground">
+                          <p className="truncate text-xs text-muted-foreground">
                             {item.title}
                           </p>
                         </div>
 
                         {/* CLICKS */}
-                        <span className="shrink-0 text-[9px] font-medium">
+                        <span className="shrink-0 text-xs font-medium">
                           {item.click_count.toLocaleString()}
                         </span>
                       </div>
@@ -282,7 +355,7 @@ export default function Page() {
 
                   <Link
                     href="/links"
-                    className="text-[10px] font-normal text-muted-foreground hover:underline"
+                    className="text-sm font-normal text-muted-foreground hover:underline"
                   >
                     View All
                   </Link>
@@ -292,23 +365,23 @@ export default function Page() {
                   <table className="w-full min-w-[650px] text-left">
                     <thead>
                       <tr className="border-b bg-muted/20">
-                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                        <th className="px-4 py-2 text-xs font-medium uppercase text-muted-foreground">
                           Short Link
                         </th>
 
-                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                        <th className="px-4 py-2 text-xs font-medium uppercase text-muted-foreground">
                           Original URL
                         </th>
 
-                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                        <th className="px-4 py-2 text-xs font-medium uppercase text-muted-foreground">
                           Status
                         </th>
 
-                        <th className="px-4 py-2 text-[9px] font-medium uppercase text-muted-foreground">
+                        <th className="px-4 py-2 text-xs font-medium uppercase text-muted-foreground">
                           Clicks
                         </th>
 
-                        <th className="px-4 py-2 text-right text-[9px] font-medium uppercase text-muted-foreground">
+                        <th className="px-4 py-2 text-right text-xs font-medium uppercase text-muted-foreground">
                           Actions
                         </th>
                       </tr>
@@ -320,11 +393,11 @@ export default function Page() {
                           key={activity.id}
                           className="border-b last:border-b-0"
                         >
-                          <td className="px-4 py-3 text-[10px] font-normal text-muted-foreground">
+                          <td className="px-4 py-3 text-sm font-normal text-muted-foreground">
                             {window.location.origin}/{activity.short_code}
                           </td>
 
-                          <td className="max-w-[280px] truncate px-4 py-3 text-[10px] text-muted-foreground">
+                          <td className="max-w-[280px] truncate px-4 py-3 text-sm text-muted-foreground">
                             {activity.original_url}
                           </td>
 
@@ -335,7 +408,7 @@ export default function Page() {
                             </span>
                           </td>
 
-                          <td className="px-4 py-3 text-[10px]">
+                          <td className="px-4 py-3 text-sm">
                             {activity.click_count.toLocaleString()}
                           </td>
 
