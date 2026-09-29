@@ -2,6 +2,13 @@ import { AppSidebar } from "@/Components/app-sidebar"
 import { SiteHeader } from "@/Components/site-header"
 import { SidebarInset, SidebarProvider } from "@/Components/ui/sidebar"
 import { Link, usePage } from "@inertiajs/react"
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/Components/ui/chart"
 import {
   CalendarDays,
   ChevronDown,
@@ -43,15 +50,19 @@ type RecentActivity = {
   created_at: string
 }
 
+type ClicksByDate = {
+  date: string
+  clicks: number
+}
 type DashboardProps = {
   stats: DashboardStats
   topPerforming: TopPerformingLink[]
   recentActivity: RecentActivity[]
+  clicksByDate: ClicksByDate[]
 }
 
-
 export default function Page() {
-  const { stats, topPerforming, recentActivity } =
+  const { stats, topPerforming, recentActivity, clicksByDate } =
     usePage<DashboardProps>().props
 
   const statItems = [
@@ -59,7 +70,6 @@ export default function Page() {
       title: "Total Clicks",
       value: stats.totalClicks.toLocaleString(),
       icon: MousePointerClick,
-      sparkline: true,
     },
     {
       title: "Active Links",
@@ -77,7 +87,12 @@ export default function Page() {
       icon: Globe2,
     },
   ]
-
+  const chartConfig = {
+    clicks: {
+      label: "Clicks",
+      color: "var(--foreground)",
+    },
+  }
   return (
     <div className="[--header-height:calc(--spacing(14))]">
       <SidebarProvider className="flex flex-col">
@@ -137,7 +152,7 @@ export default function Page() {
                           {stat.title}
                         </p>
 
-                        <Icon className="size-3.5 text-black" />
+                        <Icon className="size-3.5 text-muted-foreground" />
                       </div>
 
                       {/* VALUE */}
@@ -152,42 +167,16 @@ export default function Page() {
                           </span>
                         )}
                       </div>
-
-                      {/* MINI GRAPH - TOTAL CLICKS */}
-                      {stat.sparkline && (
-                        <svg
-                          viewBox="0 0 180 45"
-                          className="absolute bottom-0 left-0 h-[42px] w-[150px]"
-                          preserveAspectRatio="none"
-                        >
-                          <path
-                            d="
-                              M0 28
-                              C10 25 18 27 27 32
-                              C38 38 46 38 56 31
-                              C67 23 72 17 82 21
-                              C92 25 96 39 106 38
-                              C116 37 119 20 128 13
-                              C138 5 146 11 153 24
-                              C160 37 168 39 180 25
-                            "
-                            fill="none"
-                            stroke="currentColor"
-                            className="text-muted-foreground/40"
-                            strokeWidth="2"
-                          />
-                        </svg>
-                      )}
                     </div>
                   )
                 })}
               </div>
 
               {/* CHART + TOP PERFORMING */}
-              <div className="grid gap-4 lg:grid-cols-[1.8fr_1fr]">
+              <div className="grid w-full min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
 
                 {/* LINK PERFORMANCE CHART */}
-                <div className="rounded-lg border bg-background shadow-sm">
+                <div className="min-w-0 overflow-hidden rounded-lg border bg-background shadow-sm">
                   <div className="border-b px-4 py-3.5">
                     <h2 className="text-sm font-semibold">
                       Link Performance Over Time
@@ -195,101 +184,57 @@ export default function Page() {
                   </div>
 
                   <div className="px-4 pb-4 pt-3">
-                    <div className="h-[250px] w-full">
-                      <svg
-                        viewBox="0 0 700 250"
-                        className="h-full w-full"
-                        preserveAspectRatio="none"
+                    <ChartContainer
+                      config={chartConfig}
+                      className="h-[250px] w-full min-w-0"
+                    >
+                      <AreaChart
+                        accessibilityLayer
+                        data={clicksByDate}
+                        margin={{
+                          left: 12,
+                          right: 12,
+                          top: 10,
+                          bottom: 10,
+                        }}
                       >
-                        {/* HORIZONTAL GRID */}
-                        <line
-                          x1="0"
-                          y1="35"
-                          x2="700"
-                          y2="35"
-                          stroke="currentColor"
-                          className="text-muted/30"
+                        <CartesianGrid vertical={false} />
+
+                        <XAxis
+                          dataKey="date"
+                          tickLine={false}
+                          axisLine={false}
+                          tickMargin={8}
+                          tickFormatter={(value) => {
+                            const date = new Date(value)
+
+                            return date.toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })
+                          }}
                         />
 
-                        <line
-                          x1="0"
-                          y1="90"
-                          x2="700"
-                          y2="90"
-                          stroke="currentColor"
-                          className="text-muted/30"
+                        <ChartTooltip
+                          cursor={false}
+                          content={<ChartTooltipContent />}
                         />
 
-                        <line
-                          x1="0"
-                          y1="145"
-                          x2="700"
-                          y2="145"
-                          stroke="currentColor"
-                          className="text-muted/30"
+                        <Area
+                          dataKey="clicks"
+                          type="natural"
+                          fill="var(--color-clicks)"
+                          fillOpacity={0.25}
+                          stroke="var(--color-clicks)"
+                          strokeWidth={2}
                         />
-
-                        <line
-                          x1="0"
-                          y1="200"
-                          x2="700"
-                          y2="200"
-                          stroke="currentColor"
-                          className="text-muted/30"
-                        />
-
-                        {/* AREA */}
-                        <path
-                          d="
-                            M0 205
-                            C28 175 55 170 82 179
-                            C108 188 126 201 153 197
-                            C184 192 199 169 220 143
-                            C243 114 263 83 291 80
-                            C319 77 339 104 365 119
-                            C391 134 411 126 430 101
-                            C451 74 466 38 493 27
-                            C519 16 541 24 559 43
-                            C580 65 594 87 618 84
-                            C644 81 660 60 680 45
-                            C689 38 696 34 700 32
-                            L700 205
-                            L0 205
-                            Z
-                          "
-                          fill="#eeeeee"
-                          className="text-muted/20"
-                        />
-
-                        {/* MAIN GRAPH */}
-                        <path
-                          d="
-                            M0 205
-                            C28 175 55 170 82 179
-                            C108 188 126 201 153 197
-                            C184 192 199 169 220 143
-                            C243 114 263 83 291 80
-                            C319 77 339 104 365 119
-                            C391 134 411 126 430 101
-                            C451 74 466 38 493 27
-                            C519 16 541 24 559 43
-                            C580 65 594 87 618 84
-                            C644 81 660 60 680 45
-                            C689 38 696 34 700 32
-                          "
-                          fill="none"
-                          stroke="currentColor"
-                          className="text-foreground"
-                          strokeWidth="4"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </div>
+                      </AreaChart>
+                    </ChartContainer>
                   </div>
                 </div>
 
                 {/* TOP PERFORMING */}
-                <div className="rounded-lg border bg-background shadow-sm">
+                <div className="min-w-0 overflow-hidden rounded-lg border bg-background shadow-sm">
                   <div className="border-b px-4 py-3.5">
                     <h2 className="text-sm font-semibold">
                       Top Performing
@@ -329,7 +274,7 @@ export default function Page() {
               </div>
 
               {/* RECENT ACTIVITY */}
-              <div className="rounded-lg border bg-background shadow-sm">
+              <div className="w-full min-w-0 overflow-hidden rounded-lg border bg-background shadow-sm">
                 <div className="flex items-center justify-between border-b px-4 py-3.5">
                   <h2 className="text-sm font-semibold">
                     Recent Activity
@@ -409,7 +354,6 @@ export default function Page() {
                   </table>
                 </div>
               </div>
-
             </main>
           </SidebarInset>
         </div>
