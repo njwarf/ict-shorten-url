@@ -76,19 +76,30 @@ class DashboardController extends Controller
                 'created_at',
             ]);
 
-        $clicksByDate = (clone $clickLogs)
-            ->selectRaw('DATE(clicked_at) as date, COUNT(*) as clicks')
-            ->groupByRaw('DATE(clicked_at)')
-            ->orderBy('date')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'date' => $item->date,
-                    'clicks' => (int) $item->clicks,
-                ];
-            })
-            ->values();
+      $clicksByDateData = (clone $clickLogs)
+    ->selectRaw('DATE(clicked_at) as date, COUNT(*) as clicks')
+    ->groupByRaw('DATE(clicked_at)')
+    ->orderBy('date')
+    ->get()
+    ->keyBy('date');
 
+$clicksByDate = collect();
+
+$currentDate = $startDate->copy()->startOfDay();
+$lastDate = $endDate->copy()->startOfDay();
+
+while ($currentDate->lte($lastDate)) {
+    $date = $currentDate->toDateString();
+
+    $clicksByDate->push([
+        'date' => $date,
+        'clicks' => isset($clicksByDateData[$date])
+            ? (int) $clicksByDateData[$date]->clicks
+            : 0,
+    ]);
+
+    $currentDate->addDay();
+}
        return Inertia::render('Dashboard', [
     'stats' => [
         'totalClicks' => $totalClicks,
