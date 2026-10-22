@@ -18,10 +18,21 @@ class LinkController extends Controller
     /**
      * Display a listing of the resource.
      */
-   public function index(Request $request)
+
+public function index(Request $request)
 {
+    $sevenDaysAgo = now()->subDays(7);
+
     $links = Url::query()
         ->where('user_id', auth()->id())
+        ->select('urls.*')
+        ->selectSub(
+            ClickLog::query()
+                ->selectRaw('COUNT(*)')
+                ->whereColumn('click_logs.url_id', 'urls.id')
+                ->where('click_logs.clicked_at', '>=', $sevenDaysAgo),
+            'analytics_7d'
+        )
         ->when($request->search, function ($query, $search) {
             $query->where(function ($query) use ($search) {
                 $query->where('title', 'like', "%{$search}%")
@@ -40,6 +51,7 @@ class LinkController extends Controller
         ],
     ]);
 }
+
     /**
      * Show the form for creating a new resource.
      */

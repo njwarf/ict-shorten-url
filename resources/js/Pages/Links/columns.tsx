@@ -26,6 +26,7 @@ export type Link = {
   short_code: string;
   is_active: boolean;
   is_pinned: boolean;
+  analytics_7d: number;
 
 };
 
@@ -86,16 +87,17 @@ export const columns: ColumnDef<Link>[] = [
       );
     },
   },
+
   {
     id: "analytics",
     header: "Analytics (7D)",
-    cell: () => (
-      <div className="text-center text-muted-foreground">
-        -
+    accessorKey: "analytics_7d",
+    cell: ({ row }) => (
+      <div className="text-center font-medium">
+        {Number(row.original.analytics_7d ?? 0).toLocaleString("id-ID")}
       </div>
     ),
   },
-
 
   {
     id: "actions",
