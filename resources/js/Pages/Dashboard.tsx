@@ -447,11 +447,7 @@ export default function Page() {
 
                               <DropdownMenuContent align="end" className="w-40">
                                 <DropdownMenuItem
-                                  onClick={() =>
-                                    navigator.clipboard.writeText(
-                                      `${window.location.origin}/${activity.short_code}`
-                                    )
-                                  }
+                                  onClick={() => (window.location.href = `/links/${activity.id}`)}
                                 >
                                   <Eye className="mr-2 h-4 w-4" />
                                   Detail

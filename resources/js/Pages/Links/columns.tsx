@@ -137,16 +137,30 @@ export const columns: ColumnDef<Link>[] = [
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => router.get(`/links/${link.id}`)}
+            >
               <Eye className="mr-2 h-4 w-4" />
               Detail
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={async (event) => {
+                event.preventDefault();
 
-            <DropdownMenuItem>
+                try {
+                  await navigator.clipboard.writeText(
+                    `${window.location.origin}/${link.short_code}`
+                  );
+
+                  alert("URL berhasil disalin!");
+                } catch {
+                  alert("Gagal menyalin URL.");
+                }
+              }}
+            >
               <Share2 className="mr-2 h-4 w-4" />
               Share
             </DropdownMenuItem>
-
             <DropdownMenuItem
               onClick={() => window.location.href = `/links/${link.id}/edit`}
             >

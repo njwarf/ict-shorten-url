@@ -15,67 +15,76 @@ use Inertia\Inertia;
 
 class LinkController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
+    public function index(Request $request)
+    {
+        $sevenDaysAgo = now()->subDays(6)->startOfDay();
+        $today = now()->endOfDay();
 
-
-public function index(Request $request)
-{
-    $sevenDaysAgo = now()->subDays(6)->startOfDay();
-    $today = now()->endOfDay();
-
-    $links = Url::query()
-        ->where('user_id', auth()->id())
-        ->select('urls.*')
-        ->selectSub(
-            ClickLog::query()
-                ->selectRaw('COUNT(*)')
-                ->whereColumn('click_logs.url_id', 'urls.id')
-                ->whereBetween('click_logs.clicked_at', [$sevenDaysAgo, $today]),
-            'analytics_7d'
-        )
-        ->when($request->search, function ($query, $search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('title', 'like', "%{$search}%")
-                    ->orWhere('original_url', 'like', "%{$search}%")
-                    ->orWhere('short_code', 'like', "%{$search}%");
-            });
-        })
-        ->latest()
-        ->paginate(10)
-        ->withQueryString();
-
-    $links->getCollection()->transform(function ($link) use ($sevenDaysAgo, $today) {
-        $dailyClicks = ClickLog::query()
-            ->where('url_id', $link->id)
-            ->whereBetween('clicked_at', [$sevenDaysAgo, $today])
-            ->selectRaw('DATE(clicked_at) as date, COUNT(*) as total')
-            ->groupBy('date')
-            ->pluck('total', 'date');
-
-        $link->analytics_daily = collect(range(0, 6))
-            ->map(function ($day) use ($sevenDaysAgo, $dailyClicks) {
-                $date = $sevenDaysAgo->copy()->addDays($day)->toDateString();
-
-                return [
-                    'date' => $date,
-                    'clicks' => (int) ($dailyClicks[$date] ?? 0),
-                ];
+        $links = Url::query()
+            ->where('user_id', auth()->id())
+            ->select('urls.*')
+            ->selectSub(
+                ClickLog::query()
+                    ->selectRaw('COUNT(*)')
+                    ->whereColumn('click_logs.url_id', 'urls.id')
+                    ->whereBetween('click_logs.clicked_at', [$sevenDaysAgo, $today]),
+                'analytics_7d'
+            )
+            ->when($request->search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('title', 'like', "%{$search}%")
+                        ->orWhere('original_url', 'like', "%{$search}%")
+                        ->orWhere('short_code', 'like', "%{$search}%");
+                });
             })
-            ->values();
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-        return $link;
-    });
+        $linkIds = $links->getCollection()->pluck('id');
 
-    return Inertia::render('Links/Index', [
-        'links' => $links,
-        'filters' => [
-            'search' => $request->search,
-        ],
-    ]);
-}
+        $dailyClicks = ClickLog::query()
+            ->whereIn('url_id', $linkIds)
+            ->whereBetween('clicked_at', [$sevenDaysAgo, $today])
+            ->selectRaw('url_id, DATE(clicked_at) as date, COUNT(*) as total')
+            ->groupBy('url_id', 'date')
+            ->get()
+            ->groupBy('url_id');
 
+        $links->getCollection()->transform(function ($link) use (
+            $dailyClicks,
+            $sevenDaysAgo
+        ) {
+            $clicksByDate = ($dailyClicks->get($link->id) ?? collect())
+                ->pluck('total', 'date');
+
+            $link->analytics_daily = collect(range(0, 6))
+                ->map(function ($day) use ($sevenDaysAgo, $clicksByDate) {
+                    $date = $sevenDaysAgo->copy()
+                        ->addDays($day)
+                        ->toDateString();
+
+                    return [
+                        'date' => $date,
+                        'clicks' => (int) ($clicksByDate[$date] ?? 0),
+                    ];
+                })
+                ->values();
+
+            return $link;
+        });
+
+        return Inertia::render('Links/Index', [
+            'links' => $links,
+            'filters' => [
+                'search' => $request->search,
+            ],
+        ]);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -104,10 +113,16 @@ public function index(Request $request)
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
+  public function show(string $id)
+{
+    $link = Url::query()
+        ->where('user_id', auth()->id())
+        ->findOrFail($id);
+
+    return Inertia::render('Links/Show', [
+        'link' => $link,
+    ]);
+}
 
     /**
      * Show the form for editing the specified resource.
@@ -123,72 +138,74 @@ public function index(Request $request)
         ]);
     }
 
+
     /**
-     * Update the specified resource in storage.
+     * Redirect to the original URL and record analytics.
      */
-   public function redirect(string $short_code)
-{
-    $url = Url::where('short_code', $short_code)->firstOrFail();
+    public function redirect(string $short_code)
+    {
+        $url = Url::where('short_code', $short_code)->firstOrFail();
 
-    $ipAddress = request()->ip();
-    $userAgent = request()->userAgent();
-    $referrer = request()->headers->get('referer');
+        $ipAddress = request()->ip();
+        $userAgent = request()->userAgent();
+        $referrer = request()->headers->get('referer');
 
-    DB::transaction(function () use (
-        $url,
-        $ipAddress,
-        $userAgent,
-        $referrer
-    ) {
-        $referrerSlug = null;
+        DB::transaction(function () use (
+            $url,
+            $ipAddress,
+            $userAgent,
+            $referrer
+        ) {
+            $referrerSlug = null;
 
-        if ($referrer) {
-            $referrerHost = parse_url($referrer, PHP_URL_HOST);
+            if ($referrer) {
+                $referrerHost = parse_url($referrer, PHP_URL_HOST);
 
-            $referrerSlug = match (true) {
-                str_contains($referrerHost ?? '', 'facebook.com') => 'fb',
-                str_contains($referrerHost ?? '', 'instagram.com') => 'ig',
-                str_contains($referrerHost ?? '', 'youtube.com') => 'yt',
-                str_contains($referrerHost ?? '', 'tiktok.com') => 'tt',
-                str_contains($referrerHost ?? '', 'whatsapp.com') => 'wa',
-                default => null,
-            };
-        }
-
-        ClickLog::create([
-            'id' => Str::uuid(),
-            'url_id' => $url->id,
-            'referrer_slug' => $referrerSlug,
-            'user_agent' => $userAgent ?? 'Unknown',
-            'ip_address' => $ipAddress ?? 'Unknown',
-            'clicked_at' => now(),
-        ]);
-
-        $url->increment('click_count');
-
-        $url->update([
-            'last_clicked_at' => now(),
-        ]);
-
-        if ($referrerSlug) {
-            $urlReferrer = UrlReferrer::where('url_id', $url->id)
-                ->where('referrer_slug', $referrerSlug)
-                ->first();
-
-            if ($urlReferrer) {
-                $urlReferrer->increment('click_count');
-
-                $urlReferrer->update([
-                    'last_clicked_at' => now(),
-                ]);
+                $referrerSlug = match (true) {
+                    str_contains($referrerHost ?? '', 'facebook.com') => 'fb',
+                    str_contains($referrerHost ?? '', 'instagram.com') => 'ig',
+                    str_contains($referrerHost ?? '', 'youtube.com') => 'yt',
+                    str_contains($referrerHost ?? '', 'tiktok.com') => 'tt',
+                    str_contains($referrerHost ?? '', 'whatsapp.com') => 'wa',
+                    default => null,
+                };
             }
-        }
-    });
 
-    UpdateLinkAnalyticsJob::dispatch($url->id)->afterCommit();
+            ClickLog::create([
+                'id' => Str::uuid(),
+                'url_id' => $url->id,
+                'referrer_slug' => $referrerSlug,
+                'user_agent' => $userAgent ?? 'Unknown',
+                'ip_address' => $ipAddress ?? 'Unknown',
+                'clicked_at' => now(),
+            ]);
 
-    return redirect()->away($url->original_url);
-}
+            $url->increment('click_count');
+
+            $url->update([
+                'last_clicked_at' => now(),
+            ]);
+
+            if ($referrerSlug) {
+                $urlReferrer = UrlReferrer::where('url_id', $url->id)
+                    ->where('referrer_slug', $referrerSlug)
+                    ->first();
+
+                if ($urlReferrer) {
+                    $urlReferrer->increment('click_count');
+
+                    $urlReferrer->update([
+                        'last_clicked_at' => now(),
+                    ]);
+                }
+            }
+        });
+
+        UpdateLinkAnalyticsJob::dispatch($url->id)->afterCommit();
+
+        return redirect()->away($url->original_url);
+    }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -202,27 +219,32 @@ public function index(Request $request)
 
         return redirect()->route('links.index');
     }
-    public function togglePin(String $id)
+
+    public function togglePin(string $id)
     {
-      $link =Url::query()
-      ->where('user_id', auth()->id())
-      ->findOrFail($id);
+        $link = Url::query()
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
 
-      if (!$link->is_pinned) {
-        $pinnedCount = Url::query()
-        ->where('user_id', auth()->id())
-        ->where('is_pinned', true)
-        ->count();
+        if (!$link->is_pinned) {
+            $pinnedCount = Url::query()
+                ->where('user_id', auth()->id())
+                ->where('is_pinned', true)
+                ->count();
 
-        if ($pinnedCount >= 5) {
-           return back()->with('error', 'Maksimal hanya 5 link yang dapat dipin.');
+            if ($pinnedCount >= 5) {
+                return back()->with(
+                    'error',
+                    'Maksimal hanya 5 link yang dapat dipin.'
+                );
+            }
         }
-      }
 
-      $link->update([
-        'is_pinned' => !$link->is_pinned,
-      ]);
+        $link->update([
+            'is_pinned' => !$link->is_pinned,
+        ]);
 
-      return back();
+        return back();
     }
 }
+
