@@ -19,9 +19,11 @@ class LinkController extends Controller
      * Display a listing of the resource.
      */
 
+
 public function index(Request $request)
 {
-    $sevenDaysAgo = now()->subDays(7);
+    $sevenDaysAgo = now()->subDays(6)->startOfDay();
+    $today = now()->endOfDay();
 
     $links = Url::query()
         ->where('user_id', auth()->id())
@@ -30,7 +32,7 @@ public function index(Request $request)
             ClickLog::query()
                 ->selectRaw('COUNT(*)')
                 ->whereColumn('click_logs.url_id', 'urls.id')
-                ->where('click_logs.clicked_at', '>=', $sevenDaysAgo),
+                ->whereBetween('click_logs.clicked_at', [$sevenDaysAgo, $today]),
             'analytics_7d'
         )
         ->when($request->search, function ($query, $search) {
@@ -44,6 +46,28 @@ public function index(Request $request)
         ->paginate(10)
         ->withQueryString();
 
+    $links->getCollection()->transform(function ($link) use ($sevenDaysAgo, $today) {
+        $dailyClicks = ClickLog::query()
+            ->where('url_id', $link->id)
+            ->whereBetween('clicked_at', [$sevenDaysAgo, $today])
+            ->selectRaw('DATE(clicked_at) as date, COUNT(*) as total')
+            ->groupBy('date')
+            ->pluck('total', 'date');
+
+        $link->analytics_daily = collect(range(0, 6))
+            ->map(function ($day) use ($sevenDaysAgo, $dailyClicks) {
+                $date = $sevenDaysAgo->copy()->addDays($day)->toDateString();
+
+                return [
+                    'date' => $date,
+                    'clicks' => (int) ($dailyClicks[$date] ?? 0),
+                ];
+            })
+            ->values();
+
+        return $link;
+    });
+
     return Inertia::render('Links/Index', [
         'links' => $links,
         'filters' => [
@@ -51,6 +75,7 @@ public function index(Request $request)
         ],
     ]);
 }
+
 
     /**
      * Show the form for creating a new resource.

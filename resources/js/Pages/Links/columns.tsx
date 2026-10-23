@@ -1,6 +1,11 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import {
+  LineChart,
+  Line,
+  ResponsiveContainer,
+} from "recharts";
 import { router } from "@inertiajs/react";
 import {
   MoreHorizontal,
@@ -27,7 +32,10 @@ export type Link = {
   is_active: boolean;
   is_pinned: boolean;
   analytics_7d: number;
-
+  analytics_daily: {
+    date: string;
+    clicks: number;
+  }[];
 };
 
 export const columns: ColumnDef<Link>[] = [
@@ -92,11 +100,26 @@ export const columns: ColumnDef<Link>[] = [
     id: "analytics",
     header: "Analytics (7D)",
     accessorKey: "analytics_7d",
-    cell: ({ row }) => (
-      <div className="text-center font-medium">
-        {Number(row.original.analytics_7d ?? 0).toLocaleString("id-ID")}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const data = row.original.analytics_daily ?? [];
+
+      return (
+        <div className="h-10 w-28">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data}>
+              <Line
+                type="monotone"
+                dataKey="clicks"
+                stroke="var(--primary)"
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 3 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      );
+    },
   },
 
   {
