@@ -1,11 +1,14 @@
 import { Config } from 'ziggy-js';
 
+export type UserRole = "admin" | "user";
+
 export interface User {
   id: number;
   name: string;
   email: string;
   email_verified_at?: string;
   avatar?: string | null;
+  role: userRole;
 }
 
 export type PageProps<

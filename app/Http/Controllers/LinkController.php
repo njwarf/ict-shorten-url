@@ -18,10 +18,15 @@ class LinkController extends Controller
     /**
      * Display a listing of the resource.
      */
-   public function index(Request $request)
+  public function index(Request $request)
 {
-    $links = Url::query()
-        ->where('user_id', auth()->id())
+    $query = Url::query();
+
+    if (! auth()->user()->isAdmin()) {
+        $query->where('user_id', auth()->id());
+    }
+
+    $links = $query
         ->when($request->search, function ($query, $search) {
             $query->where(function ($query) use ($search) {
                 $query->where('title', 'like', "%{$search}%")
@@ -76,15 +81,19 @@ class LinkController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    {
-        $link = Url::query()
-            ->where('user_id', auth()->id())
-            ->findOrFail($id);
+{
+    $query = Url::query();
 
-        return Inertia::render('Links/Form', [
-            'link' => $link,
-        ]);
+    if (! auth()->user()->isAdmin()) {
+        $query->where('user_id', auth()->id());
     }
+
+    $link = $query->findOrFail($id);
+
+    return Inertia::render('Links/Form', [
+        'link' => $link,
+    ]);
+}
 
     /**
      * Update the specified resource in storage.
@@ -155,37 +164,46 @@ class LinkController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        $link = Url::query()
-            ->where('user_id', auth()->id())
-            ->findOrFail($id);
+   public function destroy(string $id)
+{
+    $query = Url::query();
 
-        $link->delete();
-
-        return redirect()->route('links.index');
+    if (! auth()->user()->isAdmin()) {
+        $query->where('user_id', auth()->id());
     }
-    public function togglePin(String $id)
-    {
-      $link =Url::query()
-      ->where('user_id', auth()->id())
-      ->findOrFail($id);
 
-      if (!$link->is_pinned) {
+    $link = $query->findOrFail($id);
+
+    $link->delete();
+
+    return redirect()->route('links.index');
+}
+    public function togglePin(string $id)
+{
+    $query = Url::query();
+
+    if (! auth()->user()->isAdmin()) {
+        $query->where('user_id', auth()->id());
+    }
+
+    $link = $query->findOrFail($id);
+
+    if (! $link->is_pinned) {
         $pinnedCount = Url::query()
-        ->where('user_id', auth()->id())
-        ->where('is_pinned', true)
-        ->count();
+            ->where('user_id', auth()->id())
+            ->where('is_pinned', true)
+            ->count();
 
         if ($pinnedCount >= 5) {
-           return back()->with('error', 'Maksimal hanya 5 link yang dapat dipin.');
+            return back()->with('error', 'Maksimal hanya 5 link yang dapat dipin.');
         }
-      }
-
-      $link->update([
-        'is_pinned' => !$link->is_pinned,
-      ]);
-
-      return back();
     }
+
+    $link->update([
+        'is_pinned' => ! $link->is_pinned,
+    ]);
+
+    return back();
+
+}
 }
