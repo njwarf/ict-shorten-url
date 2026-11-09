@@ -1,72 +1,29 @@
-import { AppSidebar } from "@/Components/app-sidebar";
-import { useEffect, useState } from "react";
-import { router, usePage } from "@inertiajs/react";
-import { SiteHeader } from "@/Components/site-header";
+import { useEffect, useRef, useState } from "react"
+import { Head, Link, router, usePage } from "@inertiajs/react"
+import { AlertCircle, CheckCircle2, Plus, Search, X } from "lucide-react"
+
+import { AppSidebar } from "@/Components/app-sidebar"
+import { SiteHeader } from "@/Components/site-header"
+import { Button } from "@/Components/ui/button"
+import { Input } from "@/Components/ui/input"
 import {
   SidebarInset,
   SidebarProvider,
-} from "@/Components/ui/sidebar";
-import { Input } from "@/Components/ui/input";
-import { Button } from "@/Components/ui/button";
-import { columns } from "./columns";
-import { DataTable } from "./data-table";
-import {
-  List,
-  Grid2X2,
-  Search,
-  ChevronDown,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/Components/ui/dropdown-menu";
+} from "@/Components/ui/sidebar"
+import { columns } from "./columns"
+import { DataTable } from "./data-table"
+import type { LinksIndexProps } from "./types"
 
-interface Link {
-  id: string;
-  title: string;
-  original_url: string;
-  short_code: string;
-  is_active: boolean;
-}
-
-interface PaginationLinkData {
-  url: string | null;
-  label: string;
-  active: boolean;
-}
-
-interface PaginatedLinks {
-  data: Link[];
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
-  from: number | null;
-  to: number | null;
-  links: PaginationLinkData[];
-}
-
-interface Props {
-  links: PaginatedLinks;
-  filters?: {
-    search?: string;
-  };
-}
-
-export default function Index({ links, filters }: Props) {
+export default function Index({ links, filters }: LinksIndexProps) {
   const { flash } = usePage().props as {
     flash?: {
-      error?: string;
-      success?: string;
-    };
-  };
-  const tableColumns = columns;
+      error?: string
+      success?: string
+    }
+  }
 
-  const [search, setSearch] = useState(filters?.search ?? "");
-
-  const filteredLinks = links.data;
+  const [search, setSearch] = useState(filters?.search ?? "")
+  const isInitialMount = useRef(true)
 
   const goToPage = (page: number) => {
     router.get(
@@ -79,10 +36,15 @@ export default function Index({ links, filters }: Props) {
         preserveState: true,
         preserveScroll: true,
       }
-    );
-  };
+    )
+  }
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+
     const timeout = setTimeout(() => {
       router.get(
         "/links",
@@ -94,14 +56,29 @@ export default function Index({ links, filters }: Props) {
           preserveScroll: true,
           replace: true,
         }
-      );
-    }, 500);
+      )
+    }, 400)
 
-    return () => clearTimeout(timeout);
-  }, [search]);
+    return () => clearTimeout(timeout)
+  }, [search])
+
+  const handleClearSearch = () => {
+    setSearch("")
+    router.get(
+      "/links",
+      {},
+      {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+      }
+    )
+  }
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
+      <Head title="Links" />
+
       <SidebarProvider className="flex flex-col">
         <SiteHeader />
 
@@ -109,104 +86,83 @@ export default function Index({ links, filters }: Props) {
           <AppSidebar />
 
           <SidebarInset>
-            <div className="p-6">
-              {/* Header */}
-              <div className="mb-10 flex items-center justify-between">
-                <div className="space-y-2">
-                  <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                    Inventory
-                  </p>
-
-                  <h1 className="text-6xl font-bold tracking-tight">
+            <main className="flex flex-1 flex-col gap-6 p-4 md:p-6">
+              {/* PAGE HEADER */}
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold tracking-tight text-foreground">
                     Links
                   </h1>
-
-                  <p className="text-sm text-muted-foreground">
-                    Manage your redirection architecture and track
-                    real-time performance across all touchpoints.
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Manage your shortened URLs, customize slugs, and monitor 7-day traffic performance.
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Button
-                    size="default"
-                    className="bg-primary text-primary-foreground hover:bg-primary/90"
-                    onClick={() => router.get("/links/create")}
-                  >
-                    + Create New Link
+                  <Button asChild size="sm" className="h-9 gap-1.5">
+                    <Link href="/links/create">
+                      <Plus className="size-4" />
+                      <span>Create Link</span>
+                    </Link>
                   </Button>
                 </div>
               </div>
 
-              {/* Search & Actions */}
-              <div className="mb-6 flex items-center justify-between gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-
-                  <Input
-                    placeholder="Search links..."
-                    className="w-[320px] pl-10"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="gap-2"
-                      >
-                        Sort by: Newest
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        Newest
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem>
-                        Oldest
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  <Button
-                    variant="outline"
-                    size="icon"
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    size="icon"
-                  >
-                    <Grid2X2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {flash?.error && (
-                <div className="mb-4 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                  {flash.error}
+              {/* FLASH NOTIFICATIONS */}
+              {flash?.success && (
+                <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-xs text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="size-4 shrink-0" />
+                  <span>{flash.success}</span>
                 </div>
               )}
 
-              {/* Data Table */}
+              {flash?.error && (
+                <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3 text-xs text-destructive">
+                  <AlertCircle className="size-4 shrink-0" />
+                  <span>{flash.error}</span>
+                </div>
+              )}
+
+              {/* SEARCH & FILTERS BAR */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="relative w-full sm:w-80">
+                  <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by title, code, or URL..."
+                    className="h-9 pl-8 pr-8 text-xs"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                  {search && (
+                    <button
+                      type="button"
+                      onClick={handleClearSearch}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      title="Clear search"
+                    >
+                      <X className="size-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="rounded-full bg-muted px-2.5 py-1 font-medium">
+                    {links.total} {links.total === 1 ? "link" : "links"} total
+                  </span>
+                </div>
+              </div>
+
+              {/* DATA TABLE */}
               <DataTable
-                columns={tableColumns}
-                data={filteredLinks}
+                columns={columns}
+                data={links.data}
                 pagination={links}
                 onPageChange={goToPage}
               />
-            </div>
+            </main>
           </SidebarInset>
         </div>
       </SidebarProvider>
     </div>
-  );
+  )
 }

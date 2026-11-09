@@ -1,350 +1,449 @@
-import {AppSidebar} from "@/Components/app-sidebar";
-import {SiteHeader} from "@/Components/site-header";
-import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
-import {useForm, router} from "@inertiajs/react";
-import {ArrowLeft, QrCode, RefreshCw, Download, Printer, Palette, Lightbulb, Save} from "lucide-react";
-import {Button} from "@/Components/ui/button";
-import {Input} from "@/Components/ui/input";
+import { useState } from "react"
+import { Head, Link, useForm } from "@inertiajs/react"
+import {
+  ArrowLeft,
+  Check,
+  Copy,
+  Download,
+  ExternalLink,
+  Lightbulb,
+  Lock,
+  QrCode,
+  RefreshCw,
+  Save,
+  Timer,
+} from "lucide-react"
 
-interface Props {
-  link?: {
-    id: string;
-    title: string;
-    original_url: string;
-    short_code: string;
-  };
-}
+import { AppSidebar } from "@/Components/app-sidebar"
+import { SiteHeader } from "@/Components/site-header"
+import { Button } from "@/Components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/Components/ui/card"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/Components/ui/field"
+import { Input } from "@/Components/ui/input"
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@/Components/ui/sidebar"
+import type { LinkFormProps } from "./types"
 
-export default function Form({link}: Props) {
-  const {data, setData, post, put, processing, errors} = useForm({
+export default function Form({ link }: LinkFormProps) {
+  const isEditing = Boolean(link)
+
+  const { data, setData, post, put, processing, errors } = useForm({
     title: link?.title ?? "",
     original_url: link?.original_url ?? "",
     short_code: link?.short_code ?? "",
-  });
+  })
+
+  const [copied, setCopied] = useState(false)
+  const [downloading, setDownloading] = useState(false)
 
   function submit(e: React.FormEvent) {
-    e.preventDefault();
+    e.preventDefault()
 
     if (link) {
-      put(route("links.update", link.id));
+      put(route("links.update", link.id))
     } else {
-      post(route("links.store"));
+      post(route("links.store"))
     }
   }
 
   function generateShortCode() {
-    const characters =
-      "abcdefghijklmnopqrstuvwxyz0123456789";
-
-    let result = "";
-
+    const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+    let result = ""
     for (let i = 0; i < 6; i++) {
-      result += characters.charAt(
-        Math.floor(Math.random() * characters.length)
-      );
+      result += chars.charAt(Math.floor(Math.random() * chars.length))
     }
-
-    setData("short_code", result);
+    setData("short_code", result)
   }
 
-  function handleCancel() {
-    router.get("/links");
-  }
-
-  const shortUrl = data.short_code
-    ? `${window.location.origin}/${data.short_code}`
-    : `${window.location.origin}/your-code`;
+  const origin = typeof window !== "undefined" ? window.location.origin : ""
+  const displayCode = data.short_code || "your-code"
+  const shortUrl = `${origin}/${displayCode}`
 
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&color=000000&bgcolor=ffffff&data=${encodeURIComponent(
     shortUrl
-  )}`;
+  )}`
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shortUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleDownloadQr = async () => {
+    setDownloading(true)
+    try {
+      const response = await fetch(qrCodeUrl)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `qr-${data.short_code || "shortlink"}.png`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+    } catch {
+      window.open(qrCodeUrl, "_blank")
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
+      <Head title={isEditing ? `Edit - ${link?.title}` : "Create New Link"} />
+
       <SidebarProvider className="flex flex-col">
-        <SiteHeader/>
+        <SiteHeader />
 
         <div className="flex flex-1">
-          <AppSidebar/>
+          <AppSidebar />
 
           <SidebarInset>
-            <div className="min-h-full p-6 transition-colors md:p-8">
-              {/* Header */}
-              <div className="mb-6 flex items-center justify-between">
+            <main className="flex flex-1 flex-col gap-6 p-4 md:p-6">
+              {/* PAGE HEADER */}
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
-                  <Button
-                    type="button"
-                    onClick={handleCancel}
-                    size="icon"
-                    className={"p-5"}
-                  >
-                    <ArrowLeft className="h-4 w-4"/>
+                  <Button variant="ghost" size="icon" asChild className="size-8">
+                    <Link href="/links">
+                      <ArrowLeft className="size-4" />
+                      <span className="sr-only">Back to Links</span>
+                    </Link>
                   </Button>
 
                   <div>
-                    <p className="text-[10px] font-medium uppercase tracking-wider text-foreground">
-                      Management
-                    </p>
-
                     <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                      {link ? "Edit Link" : "Create New Link"}
+                      {isEditing ? "Edit Link" : "Create New Link"}
                     </h1>
+                    <p className="text-xs text-muted-foreground">
+                      {isEditing
+                        ? "Update destination URL and link details."
+                        : "Configure your target URL and customize short slug."}
+                    </p>
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  form="link-form"
-                  disabled={processing}
-                  className={"px-7 py-5"}
-                >
-                  <Save className="mr-2 h-4 w-4"/>
-                  {processing ? "Saving..." : "Save Link"}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/links">Cancel</Link>
+                  </Button>
+
+                  <Button
+                    type="submit"
+                    form="link-form"
+                    disabled={processing}
+                    size="sm"
+                    className="gap-1.5"
+                  >
+                    <Save className="size-4" />
+                    <span>{processing ? "Saving..." : "Save Link"}</span>
+                  </Button>
+                </div>
               </div>
 
-              {/* Main Content */}
-              <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(300px,1fr)]">
-                {/* LEFT */}
-                <div className="space-y-6">
-                  {/* Link Information */}
-                  <div
-                    className="rounded-lg border border-border p-5 shadow-sm bg-card">
-                    <form id="link-form" onSubmit={submit}>
-                      {/* Link Title */}
-                      <div className="mb-5">
-                        <label className="mb-2 block text-[11px] font-medium ">
-                          Link Title
-                        </label>
+              {/* MAIN CONTENT GRID */}
+              <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(320px,1fr)]">
+                {/* LEFT: FORM FIELDS */}
+                <div className="flex flex-col gap-6">
+                  <Card>
+                    <CardHeader className="border-b pb-3">
+                      <CardTitle className="text-sm font-semibold">
+                        Link Information
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Enter the title, original destination, and custom code.
+                      </CardDescription>
+                    </CardHeader>
 
-                        <Input
-                          type="text"
-                          value={data.title}
-                          onChange={(e) =>
-                            setData("title", e.target.value)
-                          }
-                          placeholder="Campaign: Summer 2024 Launch"
-                        />
-
-                        {errors.title && (
-                          <p className="mt-1 text-xs text-destructive">
-                            {errors.title}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Destination URL */}
-                      <div className="mb-5">
-                        <label className="mb-2 block text-[11px] font-medium">
-                          Destination URL
-                        </label>
-
-                        <Input
-                          type="url"
-                          value={data.original_url}
-                          onChange={(e) =>
-                            setData("original_url", e.target.value)
-                          }
-                          placeholder="https://example.com/your-long-product-marketing-url"
-                        />
-
-                        <p className="mt-1.5 text-[10px] text-muted-foreground">
-                          Users will be redirected to this location when
-                          visiting your short link.
-                        </p>
-
-                        {errors.original_url && (
-                          <p className="mt-1 text-xs text-destructive">
-                            {errors.original_url}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Short Code */}
-                      <div>
-                        <label className="mb-2 block text-[11px] font-medium">
-                          Custom Short Code
-                        </label>
-
-                        <div className="flex gap-2">
-                          <div
-                            className="flex flex-1 items-center overflow-hidden rounded-md border border-border bg-card">
-                            <span
-                              className="whitespace-nowrap px-3 text-xs text-muted-foreground"> http://127.0.0.1:8000
-                            </span>
-
-                            <input
+                    <CardContent className="pt-5">
+                      <form id="link-form" onSubmit={submit}>
+                        <FieldGroup>
+                          {/* LINK TITLE */}
+                          <Field data-invalid={!!errors.title}>
+                            <FieldLabel htmlFor="title" className="text-xs font-medium">
+                              Link Title
+                            </FieldLabel>
+                            <Input
+                              id="title"
                               type="text"
-                              value={data.short_code}
-                              onChange={(e) =>
-                                setData("short_code", e.target.value)
-                              }
-                              placeholder="summer-sale"
-                              className="min-w-0 flex-1 border-0 bg-transparent px-2 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus:ring-0"
+                              value={data.title}
+                              onChange={(e) => setData("title", e.target.value)}
+                              placeholder="e.g. Summer Sale 2026 Promo"
+                              aria-invalid={!!errors.title}
+                              className="h-9 text-xs"
                             />
+                            <FieldDescription>
+                              An internal name to easily recognize this link on your dashboard.
+                            </FieldDescription>
+                            {errors.title && <FieldError>{errors.title}</FieldError>}
+                          </Field>
+
+                          {/* DESTINATION URL */}
+                          <Field data-invalid={!!errors.original_url}>
+                            <FieldLabel
+                              htmlFor="original_url"
+                              className="text-xs font-medium"
+                            >
+                              Destination URL
+                            </FieldLabel>
+                            <Input
+                              id="original_url"
+                              type="url"
+                              value={data.original_url}
+                              onChange={(e) =>
+                                setData("original_url", e.target.value)
+                              }
+                              placeholder="https://example.com/long-product-campaign-url"
+                              aria-invalid={!!errors.original_url}
+                              className="h-9 text-xs"
+                            />
+                            <FieldDescription>
+                              Visitors will be immediately redirected to this URL upon clicking.
+                            </FieldDescription>
+                            {errors.original_url && (
+                              <FieldError>{errors.original_url}</FieldError>
+                            )}
+                          </Field>
+
+                          {/* SHORT CODE */}
+                          <Field data-invalid={!!errors.short_code}>
+                            <FieldLabel
+                              htmlFor="short_code"
+                              className="text-xs font-medium"
+                            >
+                              Custom Short Code
+                            </FieldLabel>
+
+                            <div className="flex flex-col gap-2 sm:flex-row">
+                              <div className="flex flex-1 items-center overflow-hidden rounded-md border border-input bg-input/20 transition-colors focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30">
+                                <span className="flex h-9 items-center border-r border-input bg-muted/40 px-3 font-mono text-xs text-muted-foreground select-none">
+                                  {origin}/
+                                </span>
+                                <input
+                                  id="short_code"
+                                  type="text"
+                                  value={data.short_code}
+                                  onChange={(e) =>
+                                    setData(
+                                      "short_code",
+                                      e.target.value
+                                        .toLowerCase()
+                                        .replace(/[^a-z0-9-_]/g, "")
+                                    )
+                                  }
+                                  placeholder="custom-slug"
+                                  aria-invalid={!!errors.short_code}
+                                  className="h-9 min-w-0 flex-1 border-0 bg-transparent px-3 text-xs font-mono text-foreground outline-none placeholder:text-muted-foreground focus:ring-0"
+                                />
+                              </div>
+
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                onClick={generateShortCode}
+                                className="h-9 shrink-0 gap-1.5 text-xs"
+                              >
+                                <RefreshCw className="size-3.5" />
+                                <span>Generate</span>
+                              </Button>
+                            </div>
+
+                            <FieldDescription>
+                              Leave blank to generate a random 6-character code, or enter your own slug.
+                            </FieldDescription>
+                            {errors.short_code && (
+                              <FieldError>{errors.short_code}</FieldError>
+                            )}
+                          </Field>
+                        </FieldGroup>
+                      </form>
+                    </CardContent>
+                  </Card>
+
+                  {/* ADVANCED SETTINGS */}
+                  <Card>
+                    <CardHeader className="border-b pb-3">
+                      <CardTitle className="text-sm font-semibold">
+                        Advanced Settings
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Optional security and lifecycle configurations.
+                      </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="flex flex-col gap-3 pt-4">
+                      {/* PASSWORD PROTECTION */}
+                      <div className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/30 p-3.5">
+                        <div className="flex items-center gap-3">
+                          <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                            <Lock className="size-4" />
                           </div>
-
-                          <button
-                            type="button"
-                            onClick={generateShortCode}
-                            className="flex items-center gap-1.5 rounded-md bg-secondary px-4 py-2 text-xs font-medium text-secondary-foreground transition-colors hover:bg-secondary/80"
-                          >
-                            <RefreshCw className="h-3.5 w-3.5"/>
-                            Generate
-                          </button>
+                          <div>
+                            <p className="text-xs font-medium text-foreground">
+                              Password Protection
+                            </p>
+                            <p className="text-[11px] text-muted-foreground">
+                              Require visitors to provide a password before redirection.
+                            </p>
+                          </div>
                         </div>
 
-                        <p className="mt-1.5 text-[10px] text-muted-foreground">
-                          Leave blank to use a random ID, or enter a custom
-                          path (e.g. ict.sh/my-slug).
-                        </p>
-
-                        {errors.short_code && (
-                          <p className="mt-1 text-xs text-destructive">
-                            {errors.short_code}
-                          </p>
-                        )}
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                          Coming Soon
+                        </span>
                       </div>
-                    </form>
-                  </div>
 
-                  {/* Advanced Options */}
-                  <div
-                    className="rounded-lg border border-border bg-card p-5 shadow-sm">
-                    <h2 className="mb-4 text-sm font-semibold text-foreground">
-                      Advanced Options
-                    </h2>
-
-                    {/* Password */}
-                    <div
-                      className="flex items-center justify-between rounded-md bg-muted px-3 py-3">
-                      <div className="flex items-center gap-3">
-                        <span className="text-muted-foreground">•••</span>
-
-                        <div>
-                          <p className="text-xs font-medium text-foreground">
-                            Password Protection
-                          </p>
-
-                          <p className="text-[10px] text-muted-foreground">
-                            Require a password to access the link
-                          </p>
+                      {/* EXPIRATION DATE */}
+                      <div className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/30 p-3.5">
+                        <div className="flex items-center gap-3">
+                          <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                            <Timer className="size-4" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-foreground">
+                              Link Expiration
+                            </p>
+                            <p className="text-[11px] text-muted-foreground">
+                              Automatically disable redirect after a chosen date.
+                            </p>
+                          </div>
                         </div>
+
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                          Coming Soon
+                        </span>
                       </div>
-
-                      <div className="h-4 w-8 rounded-full bg-input p-0.5">
-                        <div className="h-3 w-3 rounded-full bg-background shadow-sm"/>
-                      </div>
-                    </div>
-
-                    {/* Expiration */}
-                    <div className="mt-2 flex items-center justify-between rounded-md px-3 py-3 opacity-50">
-                      <div className="flex items-center gap-3">
-                        <span className="text-muted-foreground">◷</span>
-
-                        <div>
-                          <p className="text-xs font-medium text-foreground">
-                            Link Expiration
-                          </p>
-
-                          <p className="text-[10px] text-muted-foreground">
-                            Automatically disable after a set date
-                          </p>
-                        </div>
-                      </div>
-
-                      <span className="text-muted-foreground">›</span>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 </div>
 
-                {/* RIGHT */}
-                <div className="space-y-5">
-                  {/* QR Preview */}
-                  <div
-                    className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
-                    <div
-                      className="flex items-center justify-between border-b border-border bg-muted px-4 py-3">
-                      <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                        QR Code Preview
-                      </p>
+                {/* RIGHT: QR PREVIEW & TIPS */}
+                <div className="flex flex-col gap-6">
+                  {/* QR PREVIEW CARD */}
+                  <Card>
+                    <CardHeader className="border-b pb-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="text-sm font-semibold">
+                            QR Code Preview
+                          </CardTitle>
+                          <CardDescription className="text-xs">
+                            Live scannable asset for your link
+                          </CardDescription>
+                        </div>
+                        <QrCode className="size-4 text-muted-foreground" />
+                      </div>
+                    </CardHeader>
 
-                      <QrCode className="h-4 w-4 text-muted-foreground"/>
-                    </div>
-
-                    <div className="px-5 pb-5 pt-6 text-center">
-                      <div className="mx-auto mb-4 flex h-[180px] w-[180px] items-center justify-center">
+                    <CardContent className="flex flex-col items-center gap-4 pt-6 text-center">
+                      <div className="rounded-xl border border-border bg-white p-3 shadow-xs">
                         <img
                           src={qrCodeUrl}
-                          alt="QR Code Preview"
-                          className="h-[170px] w-[170px] object-contain"
+                          alt="QR Code"
+                          className="size-44 object-contain"
                         />
                       </div>
 
-                      <p className="mb-1 text-xs font-medium text-foreground">
-                        http://127.0.0.1:8000/{data.short_code || "waiting-for-code"}
-                      </p>
-
-                      <p className="mb-4 text-[10px] text-muted-foreground">
-                        Scannable and ready to download
-                      </p>
-
-                      <button
-                        type="button"
-                        className="mb-2 flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
-                      >
-                        <Download className="h-3.5 w-3.5"/>
-                        Download QR Code
-                      </button>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          type="button"
-                          className="flex items-center justify-center gap-1.5 rounded-md bg-secondary px-3 py-2 text-[10px] font-medium text-secondary-foreground transition-colors hover:bg-secondary/80"
-                        >
-                          <Printer className="h-3 w-3"/>
-                          Print Asset
-                        </button>
-
-                        <button
-                          type="button"
-                          className="flex items-center justify-center gap-1.5 rounded-md bg-secondary px-3 py-2 text-[10px] font-medium text-secondary-foreground transition-colors hover:bg-secondary/80"
-                        >
-                          <Palette className="h-3 w-3"/>
-                          Customize
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Pro Tip */}
-                  <div
-                    className="rounded-lg border border-border bg-card p-5 shadow-sm">
-                    <div className="flex gap-3">
-                      <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"/>
-
-                      <div>
-                        <h3 className="mb-2 text-xs font-semibold text-foreground">
-                          Pro Tip
-                        </h3>
-
-                        <p className="text-[10px] leading-5 text-muted-foreground">
-                          Using descriptive short codes (like{" "}
-                          <span className="font-medium text-foreground">
-                            /summer-sale
-                          </span>{" "}
-                          ) can increase click-through rates by up to 34%
-                          compared to random strings.
+                      <div className="w-full">
+                        <p className="truncate text-xs font-medium text-foreground">
+                          {shortUrl}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">
+                          Scans will route straight to your target URL.
                         </p>
                       </div>
-                    </div>
-                  </div>
+
+                      <div className="flex w-full flex-col gap-2">
+                        <Button
+                          type="button"
+                          onClick={handleDownloadQr}
+                          disabled={downloading}
+                          size="sm"
+                          className="w-full gap-2 text-xs"
+                        >
+                          <Download className="size-3.5" />
+                          <span>{downloading ? "Downloading..." : "Download QR Code"}</span>
+                        </Button>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleCopy}
+                            className="gap-1.5 text-xs"
+                          >
+                            {copied ? (
+                              <Check className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                            ) : (
+                              <Copy className="size-3.5" />
+                            )}
+                            <span>{copied ? "Copied!" : "Copy URL"}</span>
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            asChild
+                            className="gap-1.5 text-xs"
+                          >
+                            <a
+                              href={shortUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink className="size-3.5" />
+                              <span>Visit</span>
+                            </a>
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* PRO TIP CARD */}
+                  <Card className="bg-muted/30">
+                    <CardContent className="flex items-start gap-3 p-4">
+                      <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                        <Lightbulb className="size-4" />
+                      </div>
+
+                      <div className="flex flex-col gap-1">
+                        <p className="text-xs font-semibold text-foreground">
+                          Pro Tip
+                        </p>
+                        <p className="text-[11px] leading-relaxed text-muted-foreground">
+                          Custom slugs like{" "}
+                          <span className="font-mono font-medium text-foreground">
+                            /summer-sale
+                          </span>{" "}
+                          yield up to 34% higher click-through rates compared to random characters.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
-            </div>
+            </main>
           </SidebarInset>
         </div>
       </SidebarProvider>
     </div>
-  );
+  )
 }

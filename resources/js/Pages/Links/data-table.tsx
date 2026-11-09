@@ -1,21 +1,18 @@
-"use client"
-
 import {
-  ColumnDef,
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import { Link } from "@inertiajs/react"
+import { Link2, Plus } from "lucide-react"
 
+import { Button } from "@/Components/ui/button"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/Components/ui/table"
-
+  Card,
+  CardContent,
+  CardFooter,
+} from "@/Components/ui/card"
 import {
   Pagination,
   PaginationContent,
@@ -25,6 +22,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/Components/ui/pagination"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/Components/ui/table"
 
 interface PaginationData {
   current_page: number
@@ -59,10 +64,7 @@ export function DataTable<TData, TValue>({
 
   const getPageNumbers = () => {
     if (lastPage <= 5) {
-      return Array.from(
-        { length: lastPage },
-        (_, index) => index + 1
-      )
+      return Array.from({ length: lastPage }, (_, index) => index + 1)
     }
 
     if (currentPage <= 3) {
@@ -70,14 +72,7 @@ export function DataTable<TData, TValue>({
     }
 
     if (currentPage >= lastPage - 2) {
-      return [
-        1,
-        "...",
-        lastPage - 3,
-        lastPage - 2,
-        lastPage - 1,
-        lastPage,
-      ]
+      return [1, "...", lastPage - 3, lastPage - 2, lastPage - 1, lastPage]
     }
 
     return [
@@ -91,96 +86,106 @@ export function DataTable<TData, TValue>({
     ]
   }
 
-  return (
-    <div className="mt-6 overflow-hidden rounded-xl border bg-background">
-      <Table>
-        <TableHeader className="bg-muted/30">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead
-                  key={header.id}
-                  className="h-12 text-xs font-semibold uppercase text-muted-foreground"
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
+  const hasRows = table.getRowModel().rows.length > 0
 
-        <TableBody>
-          {table.getRowModel().rows.length > 0 ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                className="hover:bg-muted/50"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    className="py-4"
+  return (
+    <Card className="overflow-hidden p-0">
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader className="bg-muted/40">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="h-10 text-xs font-semibold text-muted-foreground"
                   >
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
-                  </TableCell>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className="h-24 text-center"
-              >
-                Belum ada data link.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+
+          <TableBody>
+            {hasRows ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  className="transition-colors hover:bg-muted/40"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="py-3">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-64 text-center"
+                >
+                  <div className="flex flex-col items-center justify-center gap-2 p-8 text-center text-muted-foreground">
+                    <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+                      <Link2 className="size-6 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm font-semibold text-foreground">
+                      No links found
+                    </p>
+                    <p className="max-w-sm text-xs text-muted-foreground">
+                      We couldn't find any links matching your search criteria.
+                      Try a different query or create a new link.
+                    </p>
+                    <Button asChild size="sm" className="mt-2 h-8 gap-1.5 text-xs">
+                      <Link href="/links/create">
+                        <Plus className="size-3.5" />
+                        Create Link
+                      </Link>
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </CardContent>
 
       {/* FOOTER */}
-      <div className="flex items-center justify-between border-t px-6 py-4 text-sm text-muted-foreground">
-
-        {/* SHOWING */}
-        <p>
-          Showing {pagination.from ?? 0} to {pagination.to ?? 0} of{" "}
-          {pagination.total} results
+      <CardFooter className="flex flex-col gap-4 border-t px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs text-muted-foreground">
+          Showing <span className="font-medium text-foreground">{pagination.from ?? 0}</span> to{" "}
+          <span className="font-medium text-foreground">{pagination.to ?? 0}</span> of{" "}
+          <span className="font-medium text-foreground">{pagination.total}</span> links
         </p>
 
-        {/* PAGINATION */}
         {lastPage > 1 && (
           <Pagination className="mx-0 w-auto justify-end">
             <PaginationContent>
-
-              {/* PREVIOUS */}
               <PaginationItem>
                 <PaginationPrevious
                   href="#"
                   onClick={(e) => {
                     e.preventDefault()
-
                     if (currentPage > 1) {
                       onPageChange(currentPage - 1)
                     }
                   }}
                   className={
-                    currentPage === 1
-                      ? "pointer-events-none opacity-50"
-                      : ""
+                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
                   }
                 />
               </PaginationItem>
 
-              {/* PAGE NUMBERS */}
               {getPageNumbers().map((page, index) => (
                 <PaginationItem key={`${page}-${index}`}>
                   {page === "..." ? (
@@ -200,13 +205,11 @@ export function DataTable<TData, TValue>({
                 </PaginationItem>
               ))}
 
-              {/* NEXT */}
               <PaginationItem>
                 <PaginationNext
                   href="#"
                   onClick={(e) => {
                     e.preventDefault()
-
                     if (currentPage < lastPage) {
                       onPageChange(currentPage + 1)
                     }
@@ -218,11 +221,10 @@ export function DataTable<TData, TValue>({
                   }
                 />
               </PaginationItem>
-
             </PaginationContent>
           </Pagination>
         )}
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   )
 }

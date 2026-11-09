@@ -1,22 +1,29 @@
+import { Head } from "@inertiajs/react"
 
-import { PageProps } from '@/types';
-import { Head } from '@inertiajs/react';
-import { AppSidebar } from "@/Components/app-sidebar";
-import { SiteHeader } from "@/Components/site-header";
+import { AppSidebar } from "@/Components/app-sidebar"
+import { SiteHeader } from "@/Components/site-header"
 import {
   SidebarInset,
   SidebarProvider,
-} from "@/components/ui/sidebar";
-import DeleteUserForm from './Partials/DeleteUserForm';
-import UpdatePasswordForm from './Partials/UpdatePasswordForm';
-import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
+} from "@/Components/ui/sidebar"
+import type { PageProps } from "@/types"
+import DeleteUserForm from "./Partials/DeleteUserForm"
+import UpdatePasswordForm from "./Partials/UpdatePasswordForm"
+import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm"
+
+interface EditProps {
+  mustVerifyEmail: boolean
+  status?: string
+}
 
 export default function Edit({
   mustVerifyEmail,
   status,
-}: PageProps<{ mustVerifyEmail: boolean; status?: string }>) {
+}: PageProps<EditProps>) {
   return (
     <div className="[--header-height:calc(--spacing(14))]">
+      <Head title="Profile Settings" />
+
       <SidebarProvider className="flex flex-col">
         <SiteHeader />
 
@@ -24,30 +31,32 @@ export default function Edit({
           <AppSidebar />
 
           <SidebarInset>
-            <Head title="Profile" />
-
-            <div className="flex-1 p-6">
-              <div className="mx-auto w-full max-w-5xl space-y-6">
-                <div className="rounded-lg border bg-card p-6 shadow-sm">
-                  <UpdateProfileInformationForm
-                    mustVerifyEmail={mustVerifyEmail}
-                    status={status}
-                    className="max-w-xl"
-                  />
-                </div>
-
-                <div className="rounded-lg border bg-card p-6 shadow-sm">
-                  <UpdatePasswordForm className="max-w-xl" />
-                </div>
-
-                <div className="rounded-lg border bg-card p-6 shadow-sm">
-                  <DeleteUserForm className="max-w-xl" />
-                </div>
+            <main className="flex flex-1 flex-col gap-6 p-4 md:p-6">
+              {/* PAGE HEADER */}
+              <div className="flex flex-col gap-1">
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                  Profile Settings
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Manage your personal details, credentials, and account preferences.
+                </p>
               </div>
-            </div>
+
+              {/* FORMS CONTAINER */}
+              <div className="flex max-w-4xl flex-col gap-6">
+                <UpdateProfileInformationForm
+                  mustVerifyEmail={mustVerifyEmail}
+                  status={status}
+                />
+
+                <UpdatePasswordForm />
+
+                <DeleteUserForm />
+              </div>
+            </main>
           </SidebarInset>
         </div>
       </SidebarProvider>
     </div>
-  );
+  )
 }

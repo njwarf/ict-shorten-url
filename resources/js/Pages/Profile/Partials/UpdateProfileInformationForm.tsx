@@ -1,119 +1,157 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import { Transition } from '@headlessui/react';
-import { Link, useForm, usePage } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
-import { PageProps } from '@/types';
+import { type FormEventHandler } from "react"
+import { Link, useForm, usePage } from "@inertiajs/react"
+import { Check, CheckCircle2, Save, User as UserIcon } from "lucide-react"
 
-export default function UpdateProfileInformation({
+import { Button } from "@/Components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/Components/ui/card"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/Components/ui/field"
+import { Input } from "@/Components/ui/input"
+import type { PageProps } from "@/types"
+
+interface Props {
+  mustVerifyEmail: boolean
+  status?: string
+  className?: string
+}
+
+export default function UpdateProfileInformationForm({
   mustVerifyEmail,
   status,
-  className = '',
-}: {
-  mustVerifyEmail: boolean;
-  status?: string;
-  className?: string;
-}) {
-  const user = usePage<PageProps>().props.auth.user!;
+  className = "",
+}: Props) {
+  const user = usePage<PageProps>().props.auth.user!
 
   const { data, setData, patch, errors, processing, recentlySuccessful } =
     useForm({
       name: user.name,
       email: user.email,
-    });
+    })
 
   const submit: FormEventHandler = (e) => {
-    e.preventDefault();
-
-    patch(route('profile.update'));
-  };
+    e.preventDefault()
+    patch(route("profile.update"))
+  }
 
   return (
-    <section className={className}>
-      <header>
-        <h2 className="text-lg font-semibold text-foreground">
-          Profile Information
-        </h2>
-
-        <p className="mt-1 text-sm text-muted-foreground">
-          Update your account's profile information and email address.
-        </p>
-      </header>
-
-      <form onSubmit={submit} className="mt-6 space-y-6">
-        <div>
-          <InputLabel htmlFor="name" value="Name" />
-
-          <TextInput
-            id="name"
-            className="mt-1 block w-full"
-            value={data.name}
-            onChange={(e) => setData('name', e.target.value)}
-            required
-            isFocused
-            autoComplete="name"
-          />
-
-          <InputError className="mt-2" message={errors.name} />
-        </div>
-
-        <div>
-          <InputLabel htmlFor="email" value="Email" />
-
-          <TextInput
-            id="email"
-            type="email"
-            className="mt-1 block w-full"
-            value={data.email}
-            onChange={(e) => setData('email', e.target.value)}
-            required
-            autoComplete="username"
-          />
-
-          <InputError className="mt-2" message={errors.email} />
-        </div>
-
-        {mustVerifyEmail && user.email_verified_at === null && (
+    <Card className={className}>
+      <CardHeader className="border-b pb-3">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-md bg-muted text-muted-foreground">
+            <UserIcon className="size-4" />
+          </div>
           <div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Your email address is unverified.
-              <Link
-                href={route('verification.send')}
-                method="post"
-                as="button"
-                className="rounded-md text-sm underline text-primary hover:text-primary/80"
-              >
-                Click here to re-send the verification email.
-              </Link>
-            </p>
+            <CardTitle className="text-sm font-semibold">
+              Profile Information
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Update your account's display name and primary email address.
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
 
-            {status === 'verification-link-sent' && (
-              <div className="mt-2 text-sm font-medium text-green-500">
-                A new verification link has been sent to your
-                email address.
+      <form onSubmit={submit}>
+        <CardContent className="pt-5">
+          <FieldGroup>
+            {/* NAME */}
+            <Field data-invalid={!!errors.name}>
+              <FieldLabel htmlFor="name" className="text-xs font-medium">
+                Full Name
+              </FieldLabel>
+              <Input
+                id="name"
+                type="text"
+                value={data.name}
+                onChange={(e) => setData("name", e.target.value)}
+                required
+                autoComplete="name"
+                placeholder="Your name"
+                aria-invalid={!!errors.name}
+                className="h-9 text-xs"
+              />
+              <FieldDescription>
+                This name will be displayed across your shortened links and account profile.
+              </FieldDescription>
+              {errors.name && <FieldError>{errors.name}</FieldError>}
+            </Field>
+
+            {/* EMAIL */}
+            <Field data-invalid={!!errors.email}>
+              <FieldLabel htmlFor="email" className="text-xs font-medium">
+                Email Address
+              </FieldLabel>
+              <Input
+                id="email"
+                type="email"
+                value={data.email}
+                onChange={(e) => setData("email", e.target.value)}
+                required
+                autoComplete="username"
+                placeholder="name@example.com"
+                aria-invalid={!!errors.email}
+                className="h-9 text-xs"
+              />
+              <FieldDescription>
+                Used for account notifications and password recovery.
+              </FieldDescription>
+              {errors.email && <FieldError>{errors.email}</FieldError>}
+            </Field>
+
+            {/* EMAIL VERIFICATION NOTICE */}
+            {mustVerifyEmail && user.email_verified_at === null && (
+              <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3.5 text-xs text-amber-900 dark:text-amber-200">
+                <p>
+                  Your email address is currently unverified.{" "}
+                  <Link
+                    href={route("verification.send")}
+                    method="post"
+                    as="button"
+                    className="font-medium underline underline-offset-2 hover:text-amber-950 dark:hover:text-amber-100"
+                  >
+                    Click here to re-send the verification email.
+                  </Link>
+                </p>
+
+                {status === "verification-link-sent" && (
+                  <p className="mt-2 flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
+                    <CheckCircle2 className="size-3.5" />
+                    <span>A new verification link has been sent to your email address.</span>
+                  </p>
+                )}
               </div>
             )}
+          </FieldGroup>
+        </CardContent>
+
+        <CardFooter className="flex items-center justify-between border-t px-6 py-3">
+          <div className="flex items-center gap-2">
+            {recentlySuccessful && (
+              <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                <Check className="size-3.5" />
+                <span>Profile saved</span>
+              </span>
+            )}
           </div>
-        )}
 
-        <div className="flex items-center gap-4">
-          <PrimaryButton disabled={processing}>Save</PrimaryButton>
-
-          <Transition
-            show={recentlySuccessful}
-            enter="transition ease-in-out"
-            enterFrom="opacity-0"
-            leave="transition ease-in-out"
-            leaveTo="opacity-0"
-          >
-            <p className="text-sm text-muted-foreground">
-              Saved.
-            </p>
-          </Transition>
-        </div>
+          <Button type="submit" disabled={processing} size="sm" className="gap-1.5">
+            <Save className="size-3.5" />
+            <span>{processing ? "Saving..." : "Save Changes"}</span>
+          </Button>
+        </CardFooter>
       </form>
-    </section>
-  );
+    </Card>
+  )
 }

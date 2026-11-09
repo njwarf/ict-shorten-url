@@ -1,184 +1,241 @@
-"use client";
-
-import { ColumnDef } from "@tanstack/react-table";
+import { useState } from "react"
+import type { ColumnDef } from "@tanstack/react-table"
+import { Link, router } from "@inertiajs/react"
+import { Line, LineChart, ResponsiveContainer } from "recharts"
 import {
-  LineChart,
-  Line,
-  ResponsiveContainer,
-} from "recharts";
-import { router } from "@inertiajs/react";
-import {
-  MoreHorizontal,
+  Check,
+  Copy,
+  ExternalLink,
   Eye,
-  Share2,
+  MoreHorizontal,
   Pencil,
   Pin,
-} from "lucide-react";
+  Share2,
+} from "lucide-react"
 
-import { Button } from "@/Components/ui/button";
-
+import { Button } from "@/Components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/Components/ui/dropdown-menu";
+} from "@/Components/ui/dropdown-menu"
+import type { LinkAnalyticsDaily, LinkItem } from "./types"
 
-export type Link = {
-  id: string;
-  title: string;
-  original_url: string;
-  short_code: string;
-  is_active: boolean;
-  is_pinned: boolean;
-  analytics_7d: number;
-  analytics_daily: {
-    date: string;
-    clicks: number;
-  }[];
-};
+export type { LinkItem as Link }
 
-export const columns: ColumnDef<Link>[] = [
-  {
-    accessorKey: "title",
-    header: "Title",
-    cell: ({ row }) => (
-      <div>
-        <p className="text-lg font-semibold">
-          {row.original.title}
-        </p>
+function TitleCell({ link }: { link: LinkItem }) {
+  const [copied, setCopied] = useState(false)
+  const origin = typeof window !== "undefined" ? window.location.origin : ""
 
+  const handleCopy = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    navigator.clipboard.writeText(`${origin}/${link.short_code}`)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <div className="flex flex-col gap-0.5">
+      <div className="flex items-center gap-1.5">
+        {link.is_pinned ? (
+          <Pin
+            className="size-3.5 shrink-0 fill-amber-500 text-amber-500"
+            title="Pinned Link"
+          />
+        ) : null}
+        <Link
+          href={`/links/${link.id}`}
+          className="text-sm font-semibold text-foreground hover:text-primary hover:underline"
+        >
+          {link.title || "Untitled Link"}
+        </Link>
+      </div>
+
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <a
-          href={`${window.location.origin}/${row.original.short_code}`}
+          href={`${origin}/${link.short_code}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-muted-foreground hover:underline"
+          className="hover:text-foreground hover:underline"
         >
-          {window.location.origin}/{row.original.short_code}
+          /{link.short_code}
         </a>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="inline-flex size-4 items-center justify-center text-muted-foreground hover:text-foreground"
+          title="Copy short link"
+        >
+          {copied ? (
+            <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
+          ) : (
+            <Copy className="size-3" />
+          )}
+        </button>
       </div>
-    ),
+    </div>
+  )
+}
+
+function StatusBadge({ active }: { active: boolean }) {
+  return active ? (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+      <span className="size-1.5 rounded-full bg-emerald-500" />
+      Active
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+      <span className="size-1.5 rounded-full bg-muted-foreground" />
+      Inactive
+    </span>
+  )
+}
+
+function SparklineCell({
+  data,
+  total,
+}: {
+  data?: LinkAnalyticsDaily[]
+  total?: number
+}) {
+  const chartData =
+    data && data.length > 0
+      ? data
+      : Array.from({ length: 7 }, (_, i) => ({ date: `${i}`, clicks: 0 }))
+  const totalClicks =
+    total ?? chartData.reduce((acc, curr) => acc + curr.clicks, 0)
+
+  return (
+    <div className="flex items-center gap-3">
+      <div className="h-8 w-24">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={chartData}
+            margin={{ top: 2, right: 2, left: 2, bottom: 2 }}
+          >
+            <Line
+              type="monotone"
+              dataKey="clicks"
+              stroke="var(--primary)"
+              strokeWidth={1.75}
+              dot={false}
+              isAnimationActive={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <span className="shrink-0 text-xs font-semibold text-foreground">
+        {totalClicks.toLocaleString()}
+      </span>
+    </div>
+  )
+}
+
+function ActionCell({ link }: { link: LinkItem }) {
+  const [copied, setCopied] = useState(false)
+  const origin = typeof window !== "undefined" ? window.location.origin : ""
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(`${origin}/${link.short_code}`)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleTogglePin = () => {
+    router.patch(`/links/${link.id}/toggle-pin`, {}, { preserveScroll: true })
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-8 text-muted-foreground hover:text-foreground"
+        >
+          <MoreHorizontal className="size-4" />
+          <span className="sr-only">Open actions</span>
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuItem asChild>
+          <Link href={`/links/${link.id}`} className="cursor-pointer">
+            <Eye className="mr-2 size-4" />
+            Detail
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem onClick={handleCopy} className="cursor-pointer">
+          <Share2 className="mr-2 size-4" />
+          {copied ? "Copied!" : "Share / Copy"}
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <Link href={`/links/${link.id}/edit`} className="cursor-pointer">
+            <Pencil className="mr-2 size-4" />
+            Edit
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem onClick={handleTogglePin} className="cursor-pointer">
+          <Pin className="mr-2 size-4" />
+          {link.is_pinned ? "Unpin Link" : "Pin Link"}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+export const columns: ColumnDef<LinkItem>[] = [
+  {
+    accessorKey: "title",
+    header: "Title & Link",
+    cell: ({ row }) => <TitleCell link={row.original} />,
   },
   {
     accessorKey: "original_url",
-    header: "Original URL",
+    header: "Destination URL",
     cell: ({ row }) => (
-      <a
-        href={row.original.original_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-foreground hover:underline"
-      >
-        {row.original.original_url}
-      </a>
+      <div className="flex max-w-[260px] items-center gap-1.5">
+        <a
+          href={row.original.original_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="truncate text-xs text-muted-foreground hover:text-foreground hover:underline"
+          title={row.original.original_url}
+        >
+          {row.original.original_url}
+        </a>
+        <ExternalLink className="size-3 shrink-0 text-muted-foreground/60" />
+      </div>
     ),
   },
   {
     accessorKey: "is_active",
     header: "Status",
-    cell: ({ row }) => {
-      const active = row.original.is_active;
-
-      return (
-        <span
-          className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${active
-            ? "bg-green-100 text-green-700"
-            : "bg-gray-100 text-gray-700"
-            }`}
-        >
-          <span
-            className={`h-2 w-2 rounded-full ${active ? "bg-green-500" : "bg-gray-400"
-              }`}
-          />
-          {active ? "Active" : "Inactive"}
-        </span>
-      );
-    },
+    cell: ({ row }) => <StatusBadge active={row.original.is_active} />,
   },
-
   {
     id: "analytics",
-    header: "Analytics (7D)",
+    header: "Clicks (7D)",
     accessorKey: "analytics_7d",
-    cell: ({ row }) => {
-      const data = row.original.analytics_daily ?? [];
-
-      return (
-        <div className="h-10 w-28">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
-              <Line
-                type="monotone"
-                dataKey="clicks"
-                stroke="var(--primary)"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 3 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <SparklineCell
+        data={row.original.analytics_daily}
+        total={row.original.analytics_7d}
+      />
+    ),
   },
-
   {
     id: "actions",
-    header: "Action",
-    cell: ({ row }) => {
-      const link = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem
-              onClick={() => router.get(`/links/${link.id}`)}
-            >
-              <Eye className="mr-2 h-4 w-4" />
-              Detail
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={async (event) => {
-                event.preventDefault();
-
-                try {
-                  await navigator.clipboard.writeText(
-                    `${window.location.origin}/${link.short_code}`
-                  );
-
-                  alert("URL berhasil disalin!");
-                } catch {
-                  alert("Gagal menyalin URL.");
-                }
-              }}
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => window.location.href = `/links/${link.id}/edit`}
-            >
-              <Pencil className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              onClick={() =>
-                router.patch(`/links/${link.id}/toggle-pin`)
-              }
-            >
-              <Pin className="mr-2 h-4 w-4" />
-              {link.is_pinned ? "Unpin" : "Pin"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    header: () => <span className="sr-only">Actions</span>,
+    cell: ({ row }) => (
+      <div className="text-right">
+        <ActionCell link={row.original} />
+      </div>
+    ),
   },
-];
+]
