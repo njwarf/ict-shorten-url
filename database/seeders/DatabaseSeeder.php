@@ -22,6 +22,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
+        User::factory()->create([
+    'name' => 'Test User',
+    'email' => 'test@example.com',
+]);
+
         $this->call([
             ReferrerSeeder::class,
             LinkSeeder::class,
