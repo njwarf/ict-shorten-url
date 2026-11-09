@@ -19,15 +19,27 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/Components/ui/chart"
+
+import { Button } from "@/Components/ui/button"
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/Components/ui/dropdown-menu"
 import {
   CalendarDays,
   ChevronDown,
-  Copy,
   Globe2,
   Link2,
   MousePointerClick,
   Percent,
   Plus,
+  MoreHorizontal,
+  Eye,
+  Share2,
+  Pencil,
 } from "lucide-react"
 
 export const iframeHeight = "800px"
@@ -426,13 +438,42 @@ export default function Page() {
                           </td>
 
                           <td className="px-4 py-3 text-right">
-                            <button
-                              type="button"
-                              aria-label={`Copy ${activity.short_code}`}
-                              className="inline-flex size-7 items-center justify-center rounded-md hover:bg-muted"
-                            >
-                              <Copy className="size-3.5" />
-                            </button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+
+                              <DropdownMenuContent align="end" className="w-40">
+                                <DropdownMenuItem
+                                  onClick={() => (window.location.href = `/links/${activity.id}`)}
+                                >
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Detail
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    navigator.clipboard.writeText(
+                                      `${window.location.origin}/${activity.short_code}`
+                                    )
+                                  }
+                                >
+                                  <Share2 className="mr-2 h-4 w-4" />
+                                  Share
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    (window.location.href = `/links/${activity.id}/edit`)
+                                  }
+                                >
+                                  <Pencil className="mr-2 h-4 w-4" />
+                                  Edit
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </td>
                         </tr>
                       ))}

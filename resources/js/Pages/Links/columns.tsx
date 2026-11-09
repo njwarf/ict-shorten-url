@@ -1,6 +1,11 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import {
+  LineChart,
+  Line,
+  ResponsiveContainer,
+} from "recharts";
 import { router } from "@inertiajs/react";
 import {
   MoreHorizontal,
@@ -26,7 +31,11 @@ export type Link = {
   short_code: string;
   is_active: boolean;
   is_pinned: boolean;
-
+  analytics_7d: number;
+  analytics_daily: {
+    date: string;
+    clicks: number;
+  }[];
 };
 
 export const columns: ColumnDef<Link>[] = [
@@ -86,16 +95,32 @@ export const columns: ColumnDef<Link>[] = [
       );
     },
   },
+
   {
     id: "analytics",
     header: "Analytics (7D)",
-    cell: () => (
-      <div className="text-center text-muted-foreground">
-        -
-      </div>
-    ),
-  },
+    accessorKey: "analytics_7d",
+    cell: ({ row }) => {
+      const data = row.original.analytics_daily ?? [];
 
+      return (
+        <div className="h-10 w-28">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data}>
+              <Line
+                type="monotone"
+                dataKey="clicks"
+                stroke="var(--primary)"
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 3 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      );
+    },
+  },
 
   {
     id: "actions",
@@ -112,16 +137,30 @@ export const columns: ColumnDef<Link>[] = [
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => router.get(`/links/${link.id}`)}
+            >
               <Eye className="mr-2 h-4 w-4" />
               Detail
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={async (event) => {
+                event.preventDefault();
 
-            <DropdownMenuItem>
+                try {
+                  await navigator.clipboard.writeText(
+                    `${window.location.origin}/${link.short_code}`
+                  );
+
+                  alert("URL berhasil disalin!");
+                } catch {
+                  alert("Gagal menyalin URL.");
+                }
+              }}
+            >
               <Share2 className="mr-2 h-4 w-4" />
               Share
             </DropdownMenuItem>
-
             <DropdownMenuItem
               onClick={() => window.location.href = `/links/${link.id}/edit`}
             >
