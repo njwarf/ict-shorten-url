@@ -53,12 +53,16 @@ type UsersData = {
   current_page: number;
   last_page: number;
   total: number;
+  per_page: number;
+  from: number | null;
+  to: number | null;
 };
 
 type PageProps = {
   users: UsersData;
   filters: {
     search?: string;
+    role?: string;
   };
 };
 
@@ -66,14 +70,14 @@ export default function Index() {
   const { users, filters } = usePage<PageProps>().props;
 
   const [search, setSearch] = useState(filters.search ?? '');
+  const [role, setRole] = useState(filters.role ?? 'all');
 
-  const handleSearch = (value: string) => {
-    setSearch(value);
-
+  const applyFilters = (newSearch: string, newRole: string) => {
     router.get(
       '/admin/users',
       {
-        search: value,
+        search: newSearch || undefined,
+        role: newRole !== 'all' ? newRole : undefined,
         page: 1,
       },
       {
@@ -81,6 +85,16 @@ export default function Index() {
         replace: true,
       },
     );
+  };
+
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    applyFilters(value, role);
+  };
+
+  const handleRoleChange = (value: string) => {
+    setRole(value);
+    applyFilters(search, value);
   };
 
   const columns: ColumnDef<User>[] = [
@@ -121,10 +135,11 @@ export default function Index() {
       cell: ({ row }) =>
         new Date(row.original.created_at).toLocaleDateString('id-ID'),
     },
+
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => (
+      cell: () => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
@@ -160,7 +175,7 @@ export default function Index() {
     state: {
       pagination: {
         pageIndex: users.current_page - 1,
-        pageSize: 10,
+        pageSize: users.per_page ?? 10,
       },
     },
   });
@@ -169,7 +184,8 @@ export default function Index() {
     router.get(
       '/admin/users',
       {
-        search,
+        search: search || undefined,
+        role: role !== 'all' ? role : undefined,
         page,
       },
       {
@@ -193,6 +209,7 @@ export default function Index() {
             <main className="flex flex-1 flex-col gap-6 p-4 md:p-6">
               <div className="space-y-6">
 
+                {/* Header */}
                 <div>
                   <h1 className="text-2xl font-semibold">
                     Users
@@ -203,16 +220,36 @@ export default function Index() {
                   </p>
                 </div>
 
-                <div className="flex items-center">
+                {/* Search & Filter */}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <input
                     type="text"
                     value={search}
                     onChange={(e) => handleSearch(e.target.value)}
                     placeholder="Search name or email..."
-                    className="w-full max-w-sm rounded-md border bg-background px-3 py-2 text-sm outline-none"
+                    className="h-9 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring sm:max-w-sm"
                   />
+
+                  <select
+                    value={role}
+                    onChange={(e) => handleRoleChange(e.target.value)}
+                    className="h-9 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring sm:w-40"
+                  >
+                    <option value="all">
+                      All Roles
+                    </option>
+
+                    <option value="admin">
+                      Admin
+                    </option>
+
+                    <option value="user">
+                      User
+                    </option>
+                  </select>
                 </div>
 
+                {/* Table */}
                 <div className="overflow-hidden rounded-md border">
                   <Table>
                     <TableHeader>
@@ -258,9 +295,12 @@ export default function Index() {
                   </Table>
                 </div>
 
-                <div className="flex items-center justify-between">
+                {/* Pagination */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="text-sm text-muted-foreground">
-                    Showing {users.data.length} of {users.total} users
+                    {users.total > 0
+                      ? `Showing ${users.from} to ${users.to} of ${users.total} users`
+                      : 'Showing 0 users'}
                   </div>
 
                   {users.last_page > 1 && (
@@ -271,7 +311,7 @@ export default function Index() {
                           <PaginationPrevious
                             href={
                               users.current_page > 1
-                                ? `/admin/users?page=${users.current_page - 1}`
+                                ? `?page=${users.current_page - 1}`
                                 : undefined
                             }
                             onClick={(e) => {
@@ -292,7 +332,7 @@ export default function Index() {
                             return (
                               <PaginationItem key={page}>
                                 <PaginationLink
-                                  href={`/admin/users?page=${page}`}
+                                  href={`?page=${page}`}
                                   isActive={
                                     page === users.current_page
                                   }
@@ -312,7 +352,7 @@ export default function Index() {
                           <PaginationNext
                             href={
                               users.current_page < users.last_page
-                                ? `/admin/users?page=${users.current_page + 1}`
+                                ? `?page=${users.current_page + 1}`
                                 : undefined
                             }
                             onClick={(e) => {
