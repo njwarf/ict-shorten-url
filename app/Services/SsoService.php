@@ -14,7 +14,9 @@ class SsoService
     {
         $payload = [
             'iss' => config('services.sso.app_issuer'),
-            'sub' => config('services.sso.callback_url'),
+            'sub' => [
+                'callback_url' => config('services.sso.callback_url'),
+            ],
             'iat' => time(),
             'exp' => time() + 3600,
         ];
