@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Enums\Role;
 use App\Models\Url;
 
-#[Fillable(['name', 'email', 'password', 'username', 'sso_id'])]
+#[Fillable(['name', 'email', 'password', 'username', 'sso_id', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
