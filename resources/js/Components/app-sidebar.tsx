@@ -98,6 +98,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const page = usePage<any>();
   const user = page.props.auth.user;
   const pinnedLinks: PinnedLink[] = page.props.pinnedLinks ?? [];
+
+  const navMain = [
+    ...data.navMain,
+    ...(user?.role === "admin"
+      ? [
+        {
+          title: "Users",
+          url: "/admin/users",
+          icon: <UsersIcon />,
+        },
+      ]
+      : []),
+  ];
+
+
   return (
     <Sidebar
       className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
@@ -122,7 +137,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
 
         <div className="px-2 py-2">
           <p className="mb-2 px-2 text-xs font-medium text-muted-foreground">
