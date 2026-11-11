@@ -6,7 +6,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/Components/ui/card"
+} from "@/components/ui/card"
 import type { DashboardStats } from "../types"
 
 interface DashboardStatsGridProps {
@@ -16,27 +16,27 @@ interface DashboardStatsGridProps {
 export function DashboardStatsGrid({ stats }: DashboardStatsGridProps) {
   const statItems = [
     {
-      title: "Total Clicks",
+      title: "Total Klik",
       value: stats.totalClicks.toLocaleString(),
-      description: "Clicks recorded in this period",
+      description: "Klik yang tercatat pada periode ini",
       icon: MousePointerClick,
     },
     {
-      title: "Active Links",
+      title: "Tautan Aktif",
       value: stats.activeLinks.toLocaleString(),
-      description: "Links with activity in this period",
+      description: "Tautan dengan aktivitas pada periode ini",
       icon: Link2,
     },
     {
-      title: "Avg. Clicks/Link",
+      title: "Rata-rata Klik/Tautan",
       value: stats.averageClicks.toLocaleString(),
-      description: "Average clicks per active link",
+      description: "Rata-rata klik per tautan aktif",
       icon: Percent,
     },
     {
-      title: "Top Source",
+      title: "Sumber Teratas",
       value: stats.topSource || "-",
-      description: "Leading referrer domain/source",
+      description: "Domain/sumber perujuk utama",
       icon: Globe2,
     },
   ]

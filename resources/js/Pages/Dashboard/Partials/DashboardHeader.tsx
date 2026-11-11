@@ -30,10 +30,10 @@ export function DashboardHeader({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Welcome back, {userName}
+          Selamat datang kembali, {userName}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Here is a summary of your link performance for the last {totalDays} days.
+          Berikut ringkasan performa tautan Anda selama {totalDays} hari terakhir.
         </p>
       </div>
 
@@ -73,7 +73,7 @@ export function DashboardHeader({
         <Button asChild size="sm" className="h-9 gap-1.5">
           <Link href="/links/create">
             <Plus className="size-4" />
-            <span>Shorten Link</span>
+            <span>Pendekkan Tautan</span>
           </Link>
         </Button>
       </div>

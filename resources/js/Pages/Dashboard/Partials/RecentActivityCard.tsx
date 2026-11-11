@@ -21,7 +21,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/Components/ui/card"
+} from "@/components/ui/card"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,7 +59,7 @@ export function RecentActivityCard({ activity }: RecentActivityCardProps) {
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "-"
     try {
-      return format(new Date(dateStr), "MMM d, yyyy")
+      return format(new Date(dateStr), "dd MMM yyyy")
     } catch {
       return dateStr
     }
@@ -69,16 +69,16 @@ export function RecentActivityCard({ activity }: RecentActivityCardProps) {
     <Card className="w-full min-w-0">
       <CardHeader className="border-b pb-3">
         <div>
-          <CardTitle className="text-sm font-semibold">Recent Activity</CardTitle>
+          <CardTitle className="text-sm font-semibold">Aktivitas Terbaru</CardTitle>
           <CardDescription className="text-xs">
-            Recently created and active shortened links
+            Tautan pendek yang baru dibuat dan aktif
           </CardDescription>
         </div>
 
         <CardAction>
           <Button variant="ghost" size="sm" asChild className="h-8 gap-1 text-xs">
             <Link href="/links">
-              <span>View All</span>
+              <span>Lihat Semua</span>
               <ArrowUpRight className="size-3.5" />
             </Link>
           </Button>
@@ -91,24 +91,24 @@ export function RecentActivityCard({ activity }: RecentActivityCardProps) {
             <div className="flex size-10 items-center justify-center rounded-full bg-muted">
               <Link2 className="size-5" />
             </div>
-            <p className="text-sm font-medium">No recent links</p>
+            <p className="text-sm font-medium">Tidak ada tautan terbaru</p>
             <p className="text-xs text-muted-foreground">
-              You haven't created any links yet. Start by shortening your first URL.
+              Anda belum membuat tautan. Mulai dengan memperpendek URL pertama Anda.
             </p>
             <Button size="sm" asChild className="mt-2 h-8 text-xs">
-              <Link href="/links/create">Create Link</Link>
+              <Link href="/links/create">Buat Tautan</Link>
             </Button>
           </div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-[200px] text-xs">Short Link</TableHead>
-                <TableHead className="text-xs">Original URL</TableHead>
+                <TableHead className="w-[200px] text-xs">Tautan Pendek</TableHead>
+                <TableHead className="text-xs">URL Asli</TableHead>
                 <TableHead className="w-[100px] text-xs">Status</TableHead>
-                <TableHead className="w-[90px] text-xs">Clicks</TableHead>
-                <TableHead className="w-[120px] text-xs">Created</TableHead>
-                <TableHead className="w-[70px] text-right text-xs">Action</TableHead>
+                <TableHead className="w-[90px] text-xs">Klik</TableHead>
+                <TableHead className="w-[120px] text-xs">Dibuat</TableHead>
+                <TableHead className="w-[70px] text-right text-xs">Aksi</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -134,7 +134,7 @@ export function RecentActivityCard({ activity }: RecentActivityCardProps) {
                           type="button"
                           onClick={() => handleCopy(item.id, item.short_code)}
                           className="inline-flex size-5 items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground"
-                          title="Copy short link"
+                          title="Salin tautan pendek"
                         >
                           {isCopied ? (
                             <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
@@ -166,12 +166,12 @@ export function RecentActivityCard({ activity }: RecentActivityCardProps) {
                       {item.is_active ? (
                         <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
                           <span className="size-1.5 rounded-full bg-emerald-500" />
-                          Active
+                          Aktif
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                           <span className="size-1.5 rounded-full bg-muted-foreground" />
-                          Inactive
+                          Tidak Aktif
                         </span>
                       )}
                     </TableCell>
@@ -196,7 +196,7 @@ export function RecentActivityCard({ activity }: RecentActivityCardProps) {
                             className="size-8 text-muted-foreground hover:text-foreground"
                           >
                             <MoreHorizontal className="size-4" />
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">Buka menu</span>
                           </Button>
                         </DropdownMenuTrigger>
 
@@ -213,13 +213,13 @@ export function RecentActivityCard({ activity }: RecentActivityCardProps) {
                             className="cursor-pointer"
                           >
                             <Share2 className="mr-2 size-4" />
-                            {isCopied ? "Copied!" : "Share / Copy"}
+                            {isCopied ? "Tersalin!" : "Bagikan / Salin"}
                           </DropdownMenuItem>
 
                           <DropdownMenuItem asChild>
                             <Link href={`/links/${item.id}/edit`} className="cursor-pointer">
                               <Pencil className="mr-2 size-4" />
-                              Edit
+                              Ubah
                             </Link>
                           </DropdownMenuItem>
                         </DropdownMenuContent>

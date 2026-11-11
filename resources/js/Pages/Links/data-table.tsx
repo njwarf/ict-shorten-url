@@ -12,7 +12,7 @@ import {
   Card,
   CardContent,
   CardFooter,
-} from "@/Components/ui/card"
+} from "@/components/ui/card"
 import {
   Pagination,
   PaginationContent,
@@ -103,9 +103,9 @@ export function DataTable<TData, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -140,16 +140,16 @@ export function DataTable<TData, TValue>({
                       <Link2 className="size-6 text-muted-foreground" />
                     </div>
                     <p className="text-sm font-semibold text-foreground">
-                      No links found
+                      Tidak ada tautan
                     </p>
                     <p className="max-w-sm text-xs text-muted-foreground">
-                      We couldn't find any links matching your search criteria.
-                      Try a different query or create a new link.
+                      Tidak ditemukan tautan yang sesuai dengan pencarian Anda.
+                      Coba kata kunci lain atau buat tautan baru.
                     </p>
                     <Button asChild size="sm" className="mt-2 h-8 gap-1.5 text-xs">
                       <Link href="/links/create">
                         <Plus className="size-3.5" />
-                        Create Link
+                        Buat Tautan
                       </Link>
                     </Button>
                   </div>
@@ -163,9 +163,9 @@ export function DataTable<TData, TValue>({
       {/* FOOTER */}
       <CardFooter className="flex flex-col gap-4 border-t px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-muted-foreground">
-          Showing <span className="font-medium text-foreground">{pagination.from ?? 0}</span> to{" "}
-          <span className="font-medium text-foreground">{pagination.to ?? 0}</span> of{" "}
-          <span className="font-medium text-foreground">{pagination.total}</span> links
+          Menampilkan <span className="font-medium text-foreground">{pagination.from ?? 0}</span> sampai{" "}
+          <span className="font-medium text-foreground">{pagination.to ?? 0}</span> dari{" "}
+          <span className="font-medium text-foreground">{pagination.total}</span> tautan
         </p>
 
         {lastPage > 1 && (

@@ -22,7 +22,7 @@ export default function Edit({
 }: PageProps<EditProps>) {
   return (
     <div className="[--header-height:calc(--spacing(14))]">
-      <Head title="Profile Settings" />
+      <Head title="Pengaturan Profil" />
 
       <SidebarProvider className="flex flex-col">
         <SiteHeader />
@@ -35,10 +35,10 @@ export default function Edit({
               {/* PAGE HEADER */}
               <div className="flex flex-col gap-1">
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                  Profile Settings
+                  Pengaturan Profil
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Manage your personal details, credentials, and account preferences.
+                  Kelola informasi pribadi, kredensial, dan preferensi akun Anda.
                 </p>
               </div>
 

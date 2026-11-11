@@ -1,4 +1,4 @@
-
+import { usePage } from "@inertiajs/react"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,14 +7,33 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/Components/ui/breadcrumb"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { useSidebar } from "@/components/ui/sidebar"
+import { Button } from "@/Components/ui/button"
+import { Separator } from "@/Components/ui/separator"
+import { useSidebar } from "@/Components/ui/sidebar"
 import { PanelLeftIcon } from "lucide-react"
 import { ModeToggle } from "@/Components/mode-toggle"
 
 export function SiteHeader() {
   const { toggleSidebar } = useSidebar()
+  const page = usePage()
+
+  const pathname = page.url.split("?")[0]
+
+  let currentPage = "Dasbor"
+
+  if (pathname === "/dashboard/analytics") {
+    currentPage = "Analitik"
+  } else if (pathname === "/links") {
+    currentPage = "Tautan"
+  } else if (pathname === "/links/create") {
+    currentPage = "Tambah Tautan"
+  } else if (/^\/links\/[^/]+\/edit$/.test(pathname)) {
+    currentPage = "Edit Tautan"
+  } else if (/^\/links\/[^/]+$/.test(pathname)) {
+    currentPage = "Detail Tautan"
+  } else if (pathname === "/profile") {
+    currentPage = "Profil"
+  }
 
   return (
     <header className="sticky top-0 z-50 flex w-full items-center border-b bg-background">
@@ -36,18 +55,23 @@ export function SiteHeader() {
         <Breadcrumb className="hidden sm:block">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="#">
-                Build Your Application
+              <BreadcrumbLink href="/dashboard">
+                Dasbor
               </BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-            </BreadcrumbItem>
+
+            {currentPage !== "Dasbor" && (
+              <>
+                <BreadcrumbSeparator />
+
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{currentPage}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </>
+            )}
           </BreadcrumbList>
         </Breadcrumb>
 
-        {/* Tombol Dark Mode */}
         <div className="ml-auto">
           <ModeToggle />
         </div>

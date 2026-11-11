@@ -33,21 +33,21 @@ type PinnedLink = {
 const data = {
   navMain: [
     {
-      title: "Dashboard",
+      title: "Dasbor",
       url: "/dashboard",
       icon: (
         <LayoutDashboard />
       ),
     },
     {
-      title: "Analytics",
+      title: "Analitik",
       url: "/dashboard/analytics",
       icon: (
         <ChartColumn />
       ),
     },
     {
-      title: "Links",
+      title: "Tautan",
       url: "/links",
       icon: (
         <Link2 />
@@ -99,18 +99,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = page.props.auth.user;
   const pinnedLinks: PinnedLink[] = page.props.pinnedLinks ?? [];
 
-  const navMain = [
-    ...data.navMain,
-    ...(user?.role === "admin"
-      ? [
-        {
-          title: "Users",
-          url: "/admin/users",
-          icon: <UsersIcon />,
-        },
-      ]
-      : []),
-  ];
+  const navMain = data.navMain;
 
 
   return (
@@ -128,7 +117,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <TerminalIcon className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">ICT Shorten</span>
+                  <span className="truncate font-medium">ICT SH</span>
                   <span className="truncate text-xs">Enterprise</span>
                 </div>
               </Link>
@@ -141,13 +130,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
         <div className="px-2 py-2">
           <p className="mb-2 px-2 text-xs font-medium text-muted-foreground">
-            Pinned Links
+            Tautan Disematkan
           </p>
 
           <SidebarMenu>
             {pinnedLinks.length < 1 && (
               <p className="px-2 text-xs italic text-muted-foreground">
-                Create new link to pinned
+                Buat tautan untuk disematkan
               </p>
             )}
 

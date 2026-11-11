@@ -49,7 +49,7 @@ export default function Show({ link }: ShowProps) {
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "-"
     try {
-      return format(new Date(dateStr), "MMMM d, yyyy - HH:mm")
+      return format(new Date(dateStr), "dd MMM yyyy - HH:mm")
     } catch {
       return dateStr
     }
@@ -73,16 +73,16 @@ export default function Show({ link }: ShowProps) {
                   <Button variant="ghost" size="icon" asChild className="size-8">
                     <Link href="/links">
                       <ArrowLeft className="size-4" />
-                      <span className="sr-only">Back to Links</span>
+                      <span className="sr-only">Kembali ke Tautan</span>
                     </Link>
                   </Button>
 
                   <div>
                     <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                      Link Details
+                      Detail Tautan
                     </h1>
                     <p className="text-xs text-muted-foreground">
-                      Complete information and statistics for this shortened URL.
+                      Informasi lengkap dan statistik untuk URL pendek ini.
                     </p>
                   </div>
                 </div>
@@ -91,7 +91,7 @@ export default function Show({ link }: ShowProps) {
                   <Button variant="outline" size="sm" asChild className="gap-1.5 text-xs">
                     <Link href={`/links/${link.id}/edit`}>
                       <Pencil className="size-3.5" />
-                      <span>Edit Link</span>
+                      <span>Edit Tautan</span>
                     </Link>
                   </Button>
 
@@ -102,7 +102,7 @@ export default function Show({ link }: ShowProps) {
                       rel="noopener noreferrer"
                     >
                       <ExternalLink className="size-3.5" />
-                      <span>Visit Short Link</span>
+                      <span>Kunjungi Tautan Pendek</span>
                     </a>
                   </Button>
                 </div>
@@ -115,10 +115,10 @@ export default function Show({ link }: ShowProps) {
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <CardTitle className="text-lg font-bold text-foreground">
-                          {link.title || "Untitled Link"}
+                          {link.title || "Tautan Tanpa Judul"}
                         </CardTitle>
                         <CardDescription className="text-xs">
-                          Created {formatDate(link.created_at)}
+                          Dibuat {formatDate(link.created_at)}
                         </CardDescription>
                       </div>
 
@@ -126,12 +126,12 @@ export default function Show({ link }: ShowProps) {
                         {link.is_active ? (
                           <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                             <span className="size-1.5 rounded-full bg-emerald-500" />
-                            Active
+                            Aktif
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                             <span className="size-1.5 rounded-full bg-muted-foreground" />
-                            Inactive
+                            Tidak Aktif
                           </span>
                         )}
                       </CardAction>
@@ -142,7 +142,7 @@ export default function Show({ link }: ShowProps) {
                     {/* SHORT LINK */}
                     <div className="rounded-lg border border-border/80 bg-muted/20 p-4">
                       <p className="text-xs font-medium text-muted-foreground">
-                        Shortened URL
+                        URL Pendek
                       </p>
                       <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2">
                         <a
@@ -167,7 +167,7 @@ export default function Show({ link }: ShowProps) {
                             ) : (
                               <Copy className="size-3.5" />
                             )}
-                            <span>{copied ? "Copied!" : "Copy URL"}</span>
+                            <span>{copied ? "Tersalin!" : "Salin URL"}</span>
                           </Button>
                         </div>
                       </div>
@@ -176,7 +176,7 @@ export default function Show({ link }: ShowProps) {
                     {/* DESTINATION URL */}
                     <div>
                       <p className="text-xs font-medium text-muted-foreground">
-                        Destination Target URL
+                        URL Tujuan
                       </p>
                       <div className="mt-1 flex items-center gap-2">
                         <a
@@ -198,7 +198,7 @@ export default function Show({ link }: ShowProps) {
                           <MousePointerClick className="size-4" />
                         </div>
                         <div>
-                          <p className="text-xs text-muted-foreground">Total Clicks</p>
+                          <p className="text-xs text-muted-foreground">Total Klik</p>
                           <p className="text-xl font-bold text-foreground">
                             {(link.click_count ?? 0).toLocaleString()}
                           </p>
@@ -210,7 +210,7 @@ export default function Show({ link }: ShowProps) {
                           <Calendar className="size-4" />
                         </div>
                         <div>
-                          <p className="text-xs text-muted-foreground">Short Code Slug</p>
+                          <p className="text-xs text-muted-foreground">Slug Kode Pendek</p>
                           <p className="font-mono text-sm font-semibold text-foreground">
                             /{link.short_code}
                           </p>
@@ -223,14 +223,14 @@ export default function Show({ link }: ShowProps) {
                     <Button variant="ghost" size="sm" asChild className="gap-1.5 text-xs">
                       <Link href="/links">
                         <ArrowLeft className="size-3.5" />
-                        <span>All Links</span>
+                        <span>Semua Tautan</span>
                       </Link>
                     </Button>
 
                     <Button variant="outline" size="sm" asChild className="gap-1.5 text-xs">
                       <Link href={`/links/${link.id}/edit`}>
                         <Pencil className="size-3.5" />
-                        <span>Edit Link</span>
+                        <span>Edit Tautan</span>
                       </Link>
                     </Button>
                   </CardFooter>

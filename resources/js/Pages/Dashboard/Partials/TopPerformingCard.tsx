@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/Components/ui/card"
+} from "@/components/ui/card"
 import { Button } from "@/Components/ui/button"
 import type { TopPerformingLink } from "../types"
 
@@ -35,9 +35,9 @@ export function TopPerformingCard({ links }: TopPerformingCardProps) {
   return (
     <Card className="min-w-0 flex flex-col">
       <CardHeader className="border-b pb-3">
-        <CardTitle className="text-sm font-semibold">Top Performing</CardTitle>
+        <CardTitle className="text-sm font-semibold">Performa Teratas</CardTitle>
         <CardDescription className="text-xs">
-          Links with the highest total engagement
+          Tautan dengan total interaksi tertinggi
         </CardDescription>
       </CardHeader>
 
@@ -47,9 +47,9 @@ export function TopPerformingCard({ links }: TopPerformingCardProps) {
             <div className="flex size-10 items-center justify-center rounded-full bg-muted">
               <TrendingUp className="size-5" />
             </div>
-            <p className="text-sm font-medium">No top links yet</p>
+            <p className="text-sm font-medium">Belum ada tautan teratas</p>
             <p className="text-xs text-muted-foreground">
-              Create and share links to see top ranking performers here.
+              Buat dan bagikan tautan untuk melihat performa terbaik di sini.
             </p>
           </div>
         ) : (
@@ -66,13 +66,12 @@ export function TopPerformingCard({ links }: TopPerformingCardProps) {
                 >
                   {/* RANK BADGE */}
                   <div
-                    className={`flex size-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold ${
-                      isFirst
-                        ? "bg-primary/10 text-primary border border-primary/20"
-                        : isSecondOrThird
+                    className={`flex size-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold ${isFirst
+                      ? "bg-primary/10 text-primary border border-primary/20"
+                      : isSecondOrThird
                         ? "bg-muted text-foreground"
                         : "bg-muted/50 text-muted-foreground"
-                    }`}
+                      }`}
                   >
                     {index + 1}
                   </div>
@@ -85,7 +84,7 @@ export function TopPerformingCard({ links }: TopPerformingCardProps) {
                         className="truncate text-xs font-medium text-foreground hover:underline"
                         title={item.title}
                       >
-                        {item.title || "Untitled Link"}
+                        {item.title || "Tautan Tanpa Judul"}
                       </Link>
                     </div>
 
@@ -104,7 +103,7 @@ export function TopPerformingCard({ links }: TopPerformingCardProps) {
                         type="button"
                         onClick={() => handleCopy(item.id, item.short_code)}
                         className="inline-flex items-center text-muted-foreground hover:text-foreground"
-                        title="Copy short link"
+                        title="Salin tautan pendek"
                       >
                         {isCopied ? (
                           <Check className="size-3 text-emerald-600 dark:text-emerald-400" />

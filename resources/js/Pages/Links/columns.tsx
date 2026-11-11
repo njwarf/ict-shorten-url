@@ -42,14 +42,14 @@ function TitleCell({ link }: { link: LinkItem }) {
         {link.is_pinned ? (
           <Pin
             className="size-3.5 shrink-0 fill-amber-500 text-amber-500"
-            title="Pinned Link"
+            title="Tautan Disematkan"
           />
         ) : null}
         <Link
           href={`/links/${link.id}`}
           className="text-sm font-semibold text-foreground hover:text-primary hover:underline"
         >
-          {link.title || "Untitled Link"}
+          {link.title || "Tautan Tanpa Judul"}
         </Link>
       </div>
 
@@ -66,7 +66,7 @@ function TitleCell({ link }: { link: LinkItem }) {
           type="button"
           onClick={handleCopy}
           className="inline-flex size-4 items-center justify-center text-muted-foreground hover:text-foreground"
-          title="Copy short link"
+          title="Salin tautan pendek"
         >
           {copied ? (
             <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
@@ -83,12 +83,12 @@ function StatusBadge({ active }: { active: boolean }) {
   return active ? (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
       <span className="size-1.5 rounded-full bg-emerald-500" />
-      Active
+      Aktif
     </span>
   ) : (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
       <span className="size-1.5 rounded-full bg-muted-foreground" />
-      Inactive
+      Tidak Aktif
     </span>
   )
 }
@@ -170,7 +170,7 @@ function ActionCell({ link }: { link: LinkItem }) {
 
         <DropdownMenuItem onClick={handleCopy} className="cursor-pointer">
           <Share2 className="mr-2 size-4" />
-          {copied ? "Copied!" : "Share / Copy"}
+          {copied ? "Tersalin!" : "Bagikan / Salin"}
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
@@ -182,7 +182,7 @@ function ActionCell({ link }: { link: LinkItem }) {
 
         <DropdownMenuItem onClick={handleTogglePin} className="cursor-pointer">
           <Pin className="mr-2 size-4" />
-          {link.is_pinned ? "Unpin Link" : "Pin Link"}
+          {link.is_pinned ? "Lepas Sematan" : "Sematkan Tautan"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -192,12 +192,12 @@ function ActionCell({ link }: { link: LinkItem }) {
 export const columns: ColumnDef<LinkItem>[] = [
   {
     accessorKey: "title",
-    header: "Title & Link",
+    header: "Judul & Tautan",
     cell: ({ row }) => <TitleCell link={row.original} />,
   },
   {
     accessorKey: "original_url",
-    header: "Destination URL",
+    header: "URL Tujuan",
     cell: ({ row }) => (
       <div className="flex max-w-[260px] items-center gap-1.5">
         <a
@@ -220,7 +220,7 @@ export const columns: ColumnDef<LinkItem>[] = [
   },
   {
     id: "analytics",
-    header: "Clicks (7D)",
+    header: "Klik (7 Hari)",
     accessorKey: "analytics_7d",
     cell: ({ row }) => (
       <SparklineCell

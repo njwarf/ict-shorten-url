@@ -54,10 +54,10 @@ export default function UpdateProfileInformationForm({
           </div>
           <div>
             <CardTitle className="text-sm font-semibold">
-              Profile Information
+              Informasi Profil
             </CardTitle>
             <CardDescription className="text-xs">
-              Update your account's display name and primary email address.
+              Perbarui nama tampilan dan alamat email utama akun Anda.
             </CardDescription>
           </div>
         </div>
@@ -69,7 +69,7 @@ export default function UpdateProfileInformationForm({
             {/* NAME */}
             <Field data-invalid={!!errors.name}>
               <FieldLabel htmlFor="name" className="text-xs font-medium">
-                Full Name
+                Nama Lengkap
               </FieldLabel>
               <Input
                 id="name"
@@ -78,12 +78,12 @@ export default function UpdateProfileInformationForm({
                 onChange={(e) => setData("name", e.target.value)}
                 required
                 autoComplete="name"
-                placeholder="Your name"
+                placeholder="Nama Anda"
                 aria-invalid={!!errors.name}
                 className="h-9 text-xs"
               />
               <FieldDescription>
-                This name will be displayed across your shortened links and account profile.
+                Nama ini akan ditampilkan pada tautan pendek dan profil akun Anda.
               </FieldDescription>
               {errors.name && <FieldError>{errors.name}</FieldError>}
             </Field>
@@ -91,7 +91,7 @@ export default function UpdateProfileInformationForm({
             {/* EMAIL */}
             <Field data-invalid={!!errors.email}>
               <FieldLabel htmlFor="email" className="text-xs font-medium">
-                Email Address
+                Alamat Email
               </FieldLabel>
               <Input
                 id="email"
@@ -105,7 +105,7 @@ export default function UpdateProfileInformationForm({
                 className="h-9 text-xs"
               />
               <FieldDescription>
-                Used for account notifications and password recovery.
+                Digunakan untuk notifikasi akun dan pemulihan kata sandi.
               </FieldDescription>
               {errors.email && <FieldError>{errors.email}</FieldError>}
             </Field>
@@ -114,21 +114,21 @@ export default function UpdateProfileInformationForm({
             {mustVerifyEmail && user.email_verified_at === null && (
               <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3.5 text-xs text-amber-900 dark:text-amber-200">
                 <p>
-                  Your email address is currently unverified.{" "}
+                  Alamat email Anda saat ini belum diverifikasi.{" "}
                   <Link
                     href={route("verification.send")}
                     method="post"
                     as="button"
                     className="font-medium underline underline-offset-2 hover:text-amber-950 dark:hover:text-amber-100"
                   >
-                    Click here to re-send the verification email.
+                    Klik di sini untuk mengirim ulang email verifikasi.
                   </Link>
                 </p>
 
                 {status === "verification-link-sent" && (
                   <p className="mt-2 flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
                     <CheckCircle2 className="size-3.5" />
-                    <span>A new verification link has been sent to your email address.</span>
+                    <span>Link verifikasi baru telah dikirim ke alamat email Anda.</span>
                   </p>
                 )}
               </div>
@@ -141,14 +141,14 @@ export default function UpdateProfileInformationForm({
             {recentlySuccessful && (
               <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                 <Check className="size-3.5" />
-                <span>Profile saved</span>
+                <span>Profil berhasil disimpan</span>
               </span>
             )}
           </div>
 
           <Button type="submit" disabled={processing} size="sm" className="gap-1.5">
             <Save className="size-3.5" />
-            <span>{processing ? "Saving..." : "Save Changes"}</span>
+            <span>{processing ? "Menyimpan..." : "Simpan Perubahan"}</span>
           </Button>
         </CardFooter>
       </form>

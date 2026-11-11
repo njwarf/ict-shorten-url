@@ -71,10 +71,10 @@ export default function UpdatePasswordForm({ className = "" }: Props) {
           </div>
           <div>
             <CardTitle className="text-sm font-semibold">
-              Update Password
+              Ubah Kata Sandi
             </CardTitle>
             <CardDescription className="text-xs">
-              Ensure your account uses a strong, random password to maintain security.
+              Pastikan akun Anda menggunakan kata sandi yang kuat dan acak untuk menjaga keamanan.
             </CardDescription>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function UpdatePasswordForm({ className = "" }: Props) {
                 htmlFor="current_password"
                 className="text-xs font-medium"
               >
-                Current Password
+                Kata Sandi Saat Ini
               </FieldLabel>
               <Input
                 id="current_password"
@@ -103,7 +103,7 @@ export default function UpdatePasswordForm({ className = "" }: Props) {
                 className="h-9 text-xs"
               />
               <FieldDescription>
-                Provide your current password for security verification.
+                Masukkan kata sandi saat ini untuk verifikasi keamanan.
               </FieldDescription>
               {errors.current_password && (
                 <FieldError>{errors.current_password}</FieldError>
@@ -113,7 +113,7 @@ export default function UpdatePasswordForm({ className = "" }: Props) {
             {/* NEW PASSWORD */}
             <Field data-invalid={!!errors.password}>
               <FieldLabel htmlFor="password" className="text-xs font-medium">
-                New Password
+                Kata Sandi Baru
               </FieldLabel>
               <Input
                 id="password"
@@ -127,7 +127,7 @@ export default function UpdatePasswordForm({ className = "" }: Props) {
                 className="h-9 text-xs"
               />
               <FieldDescription>
-                Must be at least 8 characters with a mix of letters and numbers.
+                Minimal 8 karakter dengan kombinasi huruf dan angka.
               </FieldDescription>
               {errors.password && <FieldError>{errors.password}</FieldError>}
             </Field>
@@ -138,7 +138,7 @@ export default function UpdatePasswordForm({ className = "" }: Props) {
                 htmlFor="password_confirmation"
                 className="text-xs font-medium"
               >
-                Confirm New Password
+                Konfirmasi Kata Sandi Baru
               </FieldLabel>
               <Input
                 id="password_confirmation"
@@ -153,7 +153,7 @@ export default function UpdatePasswordForm({ className = "" }: Props) {
                 className="h-9 text-xs"
               />
               <FieldDescription>
-                Re-type your new password to verify accuracy.
+                Ketik ulang kata sandi baru untuk memastikan kebenarannya.
               </FieldDescription>
               {errors.password_confirmation && (
                 <FieldError>{errors.password_confirmation}</FieldError>
@@ -167,14 +167,14 @@ export default function UpdatePasswordForm({ className = "" }: Props) {
             {recentlySuccessful && (
               <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                 <Check className="size-3.5" />
-                <span>Password updated</span>
+                <span>Kata sandi berhasil diperbarui</span>
               </span>
             )}
           </div>
 
           <Button type="submit" disabled={processing} size="sm" className="gap-1.5">
             <Save className="size-3.5" />
-            <span>{processing ? "Saving..." : "Update Password"}</span>
+            <span>{processing ? "Menyimpan..." : "Ubah Kata Sandi"}</span>
           </Button>
         </CardFooter>
       </form>
