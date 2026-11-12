@@ -158,12 +158,12 @@ export default function Login({
                           window.location.href = route("sso.redirect");
                         }}
                       >
+                        <span>Login via SSO UMTAS</span>
                         <img
                           src={umtLogo}
                           alt="Logo UMTAS"
-                          className="mr-3 h-13 w-13 object-contain"
+                          className="ml-3 h-13 w-13 object-contain"
                         />
-                        Login via SSO UMTAS
                       </Button>
                     </Field>
                   </FieldGroup>
