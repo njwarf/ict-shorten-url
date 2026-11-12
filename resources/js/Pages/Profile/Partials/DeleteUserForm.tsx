@@ -78,10 +78,10 @@ export default function DeleteUserForm({ className = "" }: Props) {
             </div>
             <div>
               <CardTitle className="text-sm font-semibold text-destructive">
-                Delete Account
+                Hapus Akun
               </CardTitle>
               <CardDescription className="text-xs">
-                Permanently delete your account and all associated URLs and logs.
+                Hapus akun Anda secara permanen beserta seluruh URL dan log yang terkait.
               </CardDescription>
             </div>
           </div>
@@ -89,8 +89,8 @@ export default function DeleteUserForm({ className = "" }: Props) {
 
         <CardContent className="pt-4">
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Once your account is deleted, all resources and data will be permanently wiped.
-            Before proceeding, please ensure you have saved or redirected any important URLs.
+            Setelah akun dihapus, seluruh sumber daya dan data akan dihapus secara permanen.
+            Sebelum melanjutkan, pastikan Anda telah menyimpan atau mengalihkan URL penting yang masih diperlukan.
           </p>
         </CardContent>
 
@@ -102,7 +102,7 @@ export default function DeleteUserForm({ className = "" }: Props) {
             className="gap-1.5"
           >
             <Trash2 className="size-3.5" />
-            <span>Delete Account</span>
+            <span>Hapus Akun</span>
           </Button>
         </CardFooter>
       </Card>
@@ -113,11 +113,11 @@ export default function DeleteUserForm({ className = "" }: Props) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="size-4" />
-              <span>Are you absolutely sure?</span>
+              <span>Apakah Anda yakin?</span>
             </DialogTitle>
             <DialogDescription className="text-xs">
-              This action cannot be undone. Please enter your password to confirm that
-              you would like to permanently delete your account.
+              Tindakan ini tidak dapat dibatalkan. Masukkan kata sandi Anda untuk mengonfirmasi
+              bahwa Anda ingin menghapus akun secara permanen.
             </DialogDescription>
           </DialogHeader>
 
@@ -126,7 +126,7 @@ export default function DeleteUserForm({ className = "" }: Props) {
               <FieldGroup>
                 <Field data-invalid={!!errors.password}>
                   <FieldLabel htmlFor="delete-password" className="text-xs font-medium">
-                    Confirm with Password
+                    Konfirmasi dengan Kata Sandi
                   </FieldLabel>
                   <Input
                     id="delete-password"
@@ -134,7 +134,7 @@ export default function DeleteUserForm({ className = "" }: Props) {
                     ref={passwordInput}
                     value={data.password}
                     onChange={(e) => setData("password", e.target.value)}
-                    placeholder="Enter your password"
+                    placeholder="Masukkan kata sandi Anda"
                     aria-invalid={!!errors.password}
                     className="h-9 text-xs"
                     autoFocus
@@ -151,7 +151,7 @@ export default function DeleteUserForm({ className = "" }: Props) {
                 size="sm"
                 onClick={closeModal}
               >
-                Cancel
+                Batal
               </Button>
 
               <Button
@@ -160,7 +160,7 @@ export default function DeleteUserForm({ className = "" }: Props) {
                 size="sm"
                 disabled={processing}
               >
-                {processing ? "Deleting..." : "Permanently Delete"}
+                {processing ? "Menghapus..." : "Hapus Permanen"}
               </Button>
             </DialogFooter>
           </form>

@@ -23,14 +23,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/Components/ui/card"
+} from "@/components/ui/card"
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/Components/ui/field"
+} from "@/components/ui/field"
 import { Input } from "@/Components/ui/input"
 import {
   SidebarInset,
@@ -105,8 +105,7 @@ export default function Form({ link }: LinkFormProps) {
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
-      <Head title={isEditing ? `Edit - ${link?.title}` : "Create New Link"} />
-
+      <Head title={isEditing ? `Edit - ${link?.title}` : "Tambah Tautan"} />
       <SidebarProvider className="flex flex-col">
         <SiteHeader />
 
@@ -121,25 +120,25 @@ export default function Form({ link }: LinkFormProps) {
                   <Button variant="ghost" size="icon" asChild className="size-8">
                     <Link href="/links">
                       <ArrowLeft className="size-4" />
-                      <span className="sr-only">Back to Links</span>
+                      <span className="sr-only">Kembali ke Tautan</span>
                     </Link>
                   </Button>
 
                   <div>
                     <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                      {isEditing ? "Edit Link" : "Create New Link"}
+                      {isEditing ? "Edit Tautan" : "Tambah Tautan"}
                     </h1>
                     <p className="text-xs text-muted-foreground">
                       {isEditing
-                        ? "Update destination URL and link details."
-                        : "Configure your target URL and customize short slug."}
+                        ? "Perbarui URL tujuan dan detail tautan."
+                        : "Atur URL tujuan dan sesuaikan slug pendek."}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" asChild>
-                    <Link href="/links">Cancel</Link>
+                    <Link href="/links">Batal</Link>
                   </Button>
 
                   <Button
@@ -150,7 +149,7 @@ export default function Form({ link }: LinkFormProps) {
                     className="gap-1.5"
                   >
                     <Save className="size-4" />
-                    <span>{processing ? "Saving..." : "Save Link"}</span>
+                    <span>{processing ? "Menyimpan..." : "Simpan Tautan"}</span>
                   </Button>
                 </div>
               </div>
@@ -162,10 +161,9 @@ export default function Form({ link }: LinkFormProps) {
                   <Card>
                     <CardHeader className="border-b pb-3">
                       <CardTitle className="text-sm font-semibold">
-                        Link Information
-                      </CardTitle>
+                        Informasi Tautan</CardTitle>
                       <CardDescription className="text-xs">
-                        Enter the title, original destination, and custom code.
+                        Masukkan judul, URL tujuan, dan kode tautan khusus.
                       </CardDescription>
                     </CardHeader>
 
@@ -175,7 +173,7 @@ export default function Form({ link }: LinkFormProps) {
                           {/* LINK TITLE */}
                           <Field data-invalid={!!errors.title}>
                             <FieldLabel htmlFor="title" className="text-xs font-medium">
-                              Link Title
+                              Judul Tautan
                             </FieldLabel>
                             <Input
                               id="title"
@@ -187,7 +185,7 @@ export default function Form({ link }: LinkFormProps) {
                               className="h-9 text-xs"
                             />
                             <FieldDescription>
-                              An internal name to easily recognize this link on your dashboard.
+                              Nama internal untuk memudahkan Anda mengenali tautan ini di dasbor.
                             </FieldDescription>
                             {errors.title && <FieldError>{errors.title}</FieldError>}
                           </Field>
@@ -198,7 +196,7 @@ export default function Form({ link }: LinkFormProps) {
                               htmlFor="original_url"
                               className="text-xs font-medium"
                             >
-                              Destination URL
+                              URL Tujuan
                             </FieldLabel>
                             <Input
                               id="original_url"
@@ -212,7 +210,7 @@ export default function Form({ link }: LinkFormProps) {
                               className="h-9 text-xs"
                             />
                             <FieldDescription>
-                              Visitors will be immediately redirected to this URL upon clicking.
+                              Pengunjung akan langsung diarahkan ke URL ini saat tautan diklik.
                             </FieldDescription>
                             {errors.original_url && (
                               <FieldError>{errors.original_url}</FieldError>
@@ -225,7 +223,7 @@ export default function Form({ link }: LinkFormProps) {
                               htmlFor="short_code"
                               className="text-xs font-medium"
                             >
-                              Custom Short Code
+                              Kode Tautan Khusus
                             </FieldLabel>
 
                             <div className="flex flex-col gap-2 sm:flex-row">
@@ -259,12 +257,12 @@ export default function Form({ link }: LinkFormProps) {
                                 className="h-9 shrink-0 gap-1.5 text-xs"
                               >
                                 <RefreshCw className="size-3.5" />
-                                <span>Generate</span>
+                                <span>Buat Otomatis</span>
                               </Button>
                             </div>
 
                             <FieldDescription>
-                              Leave blank to generate a random 6-character code, or enter your own slug.
+                              Kosongkan untuk membuat kode acak 6 karakter, atau masukkan slug Anda sendiri.
                             </FieldDescription>
                             {errors.short_code && (
                               <FieldError>{errors.short_code}</FieldError>
@@ -279,10 +277,10 @@ export default function Form({ link }: LinkFormProps) {
                   <Card>
                     <CardHeader className="border-b pb-3">
                       <CardTitle className="text-sm font-semibold">
-                        Advanced Settings
+                        Pengaturan Lanjutan
                       </CardTitle>
                       <CardDescription className="text-xs">
-                        Optional security and lifecycle configurations.
+                        Pengaturan keamanan dan masa berlaku tambahan.
                       </CardDescription>
                     </CardHeader>
 
@@ -295,10 +293,10 @@ export default function Form({ link }: LinkFormProps) {
                           </div>
                           <div>
                             <p className="text-xs font-medium text-foreground">
-                              Password Protection
+                              Perlindungan Kata Sandi
                             </p>
                             <p className="text-[11px] text-muted-foreground">
-                              Require visitors to provide a password before redirection.
+                              Pengunjung harus memasukkan kata sandi sebelum diarahkan.
                             </p>
                           </div>
                         </div>
@@ -316,16 +314,16 @@ export default function Form({ link }: LinkFormProps) {
                           </div>
                           <div>
                             <p className="text-xs font-medium text-foreground">
-                              Link Expiration
+                              Masa Berlaku Tautan
                             </p>
                             <p className="text-[11px] text-muted-foreground">
-                              Automatically disable redirect after a chosen date.
+                              Nonaktifkan pengalihan secara otomatis setelah tanggal yang dipilih.
                             </p>
                           </div>
                         </div>
 
                         <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                          Coming Soon
+                          Segera Hadir
                         </span>
                       </div>
                     </CardContent>
@@ -340,10 +338,10 @@ export default function Form({ link }: LinkFormProps) {
                       <div className="flex items-center justify-between">
                         <div>
                           <CardTitle className="text-sm font-semibold">
-                            QR Code Preview
+                            Pratinjau QR Code
                           </CardTitle>
                           <CardDescription className="text-xs">
-                            Live scannable asset for your link
+                            QR Code yang dapat dipindai untuk tautan Anda
                           </CardDescription>
                         </div>
                         <QrCode className="size-4 text-muted-foreground" />
@@ -364,7 +362,7 @@ export default function Form({ link }: LinkFormProps) {
                           {shortUrl}
                         </p>
                         <p className="mt-0.5 text-[11px] text-muted-foreground">
-                          Scans will route straight to your target URL.
+                          Pemindaian akan langsung mengarahkan ke URL tujuan Anda.
                         </p>
                       </div>
 
@@ -377,7 +375,7 @@ export default function Form({ link }: LinkFormProps) {
                           className="w-full gap-2 text-xs"
                         >
                           <Download className="size-3.5" />
-                          <span>{downloading ? "Downloading..." : "Download QR Code"}</span>
+                          <span>{downloading ? "Mengunduh..." : "Unduh QR Code"}</span>
                         </Button>
 
                         <div className="grid grid-cols-2 gap-2">
@@ -393,7 +391,7 @@ export default function Form({ link }: LinkFormProps) {
                             ) : (
                               <Copy className="size-3.5" />
                             )}
-                            <span>{copied ? "Copied!" : "Copy URL"}</span>
+                            <span>{copied ? "Tersalin!" : "Salin URL"}</span>
                           </Button>
 
                           <Button
@@ -409,7 +407,7 @@ export default function Form({ link }: LinkFormProps) {
                               rel="noopener noreferrer"
                             >
                               <ExternalLink className="size-3.5" />
-                              <span>Visit</span>
+                              <span>Kunjungi</span>
                             </a>
                           </Button>
                         </div>
@@ -426,14 +424,14 @@ export default function Form({ link }: LinkFormProps) {
 
                       <div className="flex flex-col gap-1">
                         <p className="text-xs font-semibold text-foreground">
-                          Pro Tip
+                          Tips
                         </p>
                         <p className="text-[11px] leading-relaxed text-muted-foreground">
                           Custom slugs like{" "}
                           <span className="font-mono font-medium text-foreground">
                             /summer-sale
                           </span>{" "}
-                          yield up to 34% higher click-through rates compared to random characters.
+                          dapat menghasilkan rasio klik hingga 34% lebih tinggi dibandingkan karakter acak.
                         </p>
                       </div>
                     </CardContent>

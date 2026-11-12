@@ -1,8 +1,9 @@
-import { Head, Link, useForm } from "@inertiajs/react";
+import umtLogo from "@/Components/umt-logo.svg"
+import { Head, useForm } from "@inertiajs/react";
 import { FormEventHandler } from "react";
 import { Checkbox } from "@/Components/ui/checkbox";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/Components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,21 +13,18 @@ import {
 } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/Components/ui/input";
 
 export default function Login({
   status,
   error,
-  canResetPassword,
 }: {
   status?: string;
   error?: string;
-  canResetPassword: boolean;
 }) {
   const { data, setData, post, processing, errors, reset } = useForm({
     email: "",
@@ -44,20 +42,17 @@ export default function Login({
 
   return (
     <>
-      <Head title="Log in" />
+      <Head title="Masuk" />
 
       <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
         <div className="w-full max-w-sm">
           <div className="flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>
-                  Login to your account
-                </CardTitle>
+                <CardTitle>Masuk ke akun Anda</CardTitle>
 
                 <CardDescription>
-                  Enter your email below to login to your
-                  account
+                  Masukkan email dan kata sandi untuk masuk ke akun Anda
                 </CardDescription>
               </CardHeader>
 
@@ -76,7 +71,6 @@ export default function Login({
 
                 <form onSubmit={submit}>
                   <FieldGroup>
-
                     <Field>
                       <FieldLabel htmlFor="email">
                         Email
@@ -85,14 +79,11 @@ export default function Login({
                       <Input
                         id="email"
                         type="email"
-                        placeholder="m@example.com"
+                        placeholder="nama@email.com"
                         value={data.email}
                         autoComplete="username"
                         onChange={(e) =>
-                          setData(
-                            "email",
-                            e.target.value
-                          )
+                          setData("email", e.target.value)
                         }
                       />
 
@@ -104,22 +95,9 @@ export default function Login({
                     </Field>
 
                     <Field>
-                      <div className="flex items-center">
-                        <FieldLabel htmlFor="password">
-                          Password
-                        </FieldLabel>
-
-                        {canResetPassword && (
-                          <Link
-                            href={route(
-                              "password.request"
-                            )}
-                            className="ml-auto text-sm underline-offset-4 hover:underline"
-                          >
-                            Forgot your password?
-                          </Link>
-                        )}
-                      </div>
+                      <FieldLabel htmlFor="password">
+                        Kata Sandi
+                      </FieldLabel>
 
                       <Input
                         id="password"
@@ -127,10 +105,7 @@ export default function Login({
                         value={data.password}
                         autoComplete="current-password"
                         onChange={(e) =>
-                          setData(
-                            "password",
-                            e.target.value
-                          )
+                          setData("password", e.target.value)
                         }
                       />
 
@@ -140,26 +115,27 @@ export default function Login({
                         </FieldError>
                       )}
                     </Field>
+
                     <Field>
                       <label className="flex items-center gap-2 text-sm">
                         <Checkbox
                           checked={data.remember}
                           onCheckedChange={(checked) =>
                             setData("remember", checked === true)
-
                           }
                         />
 
-                        Remember me
+                        Ingat saya
                       </label>
                     </Field>
+
                     <Field>
                       <Button
                         type="submit"
                         className="w-full"
                         disabled={processing}
                       >
-                        {processing ? "Logging in..." : "Login"}
+                        {processing ? "Sedang masuk..." : "Masuk"}
                       </Button>
 
                       <div className="relative my-4">
@@ -176,33 +152,27 @@ export default function Login({
 
                       <Button
                         type="button"
-                        variant="outline"
-                        className="w-full"
+                        className="w-full text-white hover:opacity-90"
+                        style={{ backgroundColor: "#3a57e8" }}
                         onClick={() => {
                           window.location.href = route("sso.redirect");
                         }}
                       >
-                        Login via SSO UMTAS
+                        <span>Masuk dengan</span>
+                        <img
+                          src={umtLogo}
+                          alt="Logo UMTAS"
+                          className="h-15 w-15 object-contain"
+                        />
                       </Button>
-
-                      <FieldDescription className="text-center">
-                        Don't have an account?{" "}
-                        <Link
-                          href={route("register")}
-                          className="underline underline-offset-4"
-                        >
-                          Sign up
-                        </Link>
-                      </FieldDescription>
                     </Field>
-
                   </FieldGroup>
                 </form>
               </CardContent>
             </Card>
           </div>
         </div>
-      </div >
+      </div>
     </>
   );
 }

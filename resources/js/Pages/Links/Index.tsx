@@ -77,7 +77,7 @@ export default function Index({ links, filters }: LinksIndexProps) {
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
-      <Head title="Links" />
+      <Head title="Tautan" />
 
       <SidebarProvider className="flex flex-col">
         <SiteHeader />
@@ -91,10 +91,10 @@ export default function Index({ links, filters }: LinksIndexProps) {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                    Links
+                    Tautan
                   </h1>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Manage your shortened URLs, customize slugs, and monitor 7-day traffic performance.
+                    Kelola URL pendek, sesuaikan slug, dan pantau performa lalu lintas selama 7 hari.
                   </p>
                 </div>
 
@@ -102,7 +102,7 @@ export default function Index({ links, filters }: LinksIndexProps) {
                   <Button asChild size="sm" className="h-9 gap-1.5">
                     <Link href="/links/create">
                       <Plus className="size-4" />
-                      <span>Create Link</span>
+                      <span>Buat Tautan</span>
                     </Link>
                   </Button>
                 </div>
@@ -128,7 +128,7 @@ export default function Index({ links, filters }: LinksIndexProps) {
                 <div className="relative w-full sm:w-80">
                   <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    placeholder="Search by title, code, or URL..."
+                    placeholder="Cari berdasarkan judul, kode, atau URL..."
                     className="h-9 pl-8 pr-8 text-xs"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -138,7 +138,7 @@ export default function Index({ links, filters }: LinksIndexProps) {
                       type="button"
                       onClick={handleClearSearch}
                       className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      title="Clear search"
+                      title="Hapus pencarian"
                     >
                       <X className="size-3.5" />
                     </button>
@@ -147,7 +147,7 @@ export default function Index({ links, filters }: LinksIndexProps) {
 
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span className="rounded-full bg-muted px-2.5 py-1 font-medium">
-                    {links.total} {links.total === 1 ? "link" : "links"} total
+                    Total {links.total} tautan
                   </span>
                 </div>
               </div>

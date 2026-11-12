@@ -70,7 +70,7 @@ export default function Dashboard() {
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
-      <Head title="Dashboard" />
+      <Head title="Dasbor" />
       <SidebarProvider className="flex flex-col">
         <SiteHeader />
 

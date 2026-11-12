@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/Components/ui/card"
+} from "@/components/ui/card"
 import {
   type ChartConfig,
   ChartContainer,
@@ -19,7 +19,7 @@ import type { ClicksByDate } from "../types"
 
 const chartConfig = {
   clicks: {
-    label: "Clicks",
+    label: "Klik",
     color: "var(--primary)",
   },
 } satisfies ChartConfig
@@ -37,15 +37,15 @@ export function PerformanceChartCard({ data }: PerformanceChartCardProps) {
       <CardHeader className="border-b pb-3">
         <div>
           <CardTitle className="text-sm font-semibold">
-            Link Performance Over Time
+            Performa Tautan dari Waktu ke Waktu
           </CardTitle>
           <CardDescription className="text-xs">
-            Daily click trends across all active links
+            Trend klik harian pada semua tautan aktif
           </CardDescription>
         </div>
         <CardAction>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-            {totalClicksInRange.toLocaleString()} total clicks
+            {totalClicksInRange.toLocaleString()} total klik
           </span>
         </CardAction>
       </CardHeader>
@@ -56,9 +56,9 @@ export function PerformanceChartCard({ data }: PerformanceChartCardProps) {
             <div className="flex size-10 items-center justify-center rounded-full bg-muted">
               <BarChart3 className="size-5" />
             </div>
-            <p className="text-sm font-medium">No performance data yet</p>
+            <p className="text-sm font-medium">Belum ada data performa</p>
             <p className="text-xs text-muted-foreground">
-              Activity will be charted here once your links receive clicks.
+              Aktivitas akan ditampilkan di sini setelah tautan Anda menerima klik.
             </p>
           </div>
         ) : (
@@ -100,7 +100,7 @@ export function PerformanceChartCard({ data }: PerformanceChartCardProps) {
                 tickMargin={8}
                 tickFormatter={(value) => {
                   const date = new Date(value)
-                  return date.toLocaleDateString("en-US", {
+                  return date.toLocaleDateString("id-ID", {
                     month: "short",
                     day: "numeric",
                   })
