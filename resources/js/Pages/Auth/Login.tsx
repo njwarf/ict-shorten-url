@@ -17,7 +17,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/Components/ui/input";
 
 export default function Login({
   status,
@@ -47,11 +47,6 @@ export default function Login({
       <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
         <div className="w-full max-w-sm">
           <div className="flex flex-col gap-6">
-            <img
-              src={umtLogo}
-              alt="Logo UMTAS"
-              className="mx-auto h-auto w-40"
-            />
             <Card>
               <CardHeader>
                 <CardTitle>Masuk ke akun Anda</CardTitle>
@@ -163,6 +158,11 @@ export default function Login({
                           window.location.href = route("sso.redirect");
                         }}
                       >
+                        <img
+                          src={umtLogo}
+                          alt="Logo UMTAS"
+                          className="mr-3 h-13 w-13 object-contain"
+                        />
                         Login via SSO UMTAS
                       </Button>
                     </Field>

@@ -73,7 +73,7 @@ export function DashboardHeader({
         <Button asChild size="sm" className="h-9 gap-1.5">
           <Link href="/links/create">
             <Plus className="size-4" />
-            <span>Pendekkan Tautan</span>
+            <span>Tambah Tautan</span>
           </Link>
         </Button>
       </div>
