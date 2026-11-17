@@ -30,6 +30,7 @@ type PinnedLink = {
   title: string;
   short_code: string;
 };
+
 const data = {
   navMain: [
     {
@@ -41,7 +42,7 @@ const data = {
     },
     {
       title: "Analytics",
-      url: "/dashboard/analytics",
+      url: "/analytics", // <-- DIPERBAIKI DARI "/dashboard/analytics" MENJADI "/analytics"
       icon: (
         <ChartColumn />
       ),
@@ -111,7 +112,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ]
       : []),
   ];
-
 
   return (
     <Sidebar

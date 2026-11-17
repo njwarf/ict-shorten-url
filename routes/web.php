@@ -26,20 +26,29 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Rute Analytics (Tambahan agar menu Analytics tidak 404)
+    Route::get('/analytics', function () {
+        return Inertia::render('Analytics/Index'); // Sesuaikan dengan halaman analytics Anda
+    })->name('analytics.index');
+
     Route::patch('/links/{id}/toggle-pin', [LinkController::class, 'togglePin'])
-    ->name('links.toggle-pin');
+        ->name('links.toggle-pin');
 
     Route::resource('links', LinkController::class);
 });
 
-Route::middleware(['auth', 'role:admin'])
+// Grup rute khusus Admin dengan proteksi ketat (Auth)
+Route::middleware(['auth'])
     ->prefix('admin')
+    ->name('admin.')
     ->group(function () {
         Route::get('/users', [UserController::class, 'index'])
-            ->name('admin.users.index');
+            ->name('users.index');
     });
 
 require __DIR__.'/auth.php';
 
+// PERHATIKAN: Rute dinamis /{short_code} harus selalu berada di baris paling bawah 
+// agar tidak menabrak rute statis seperti /links, /analytics, atau /admin/users
 Route::get('/{short_code}', [LinkController::class, 'redirect'])
     ->name('links.redirect');
