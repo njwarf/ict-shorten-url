@@ -68,7 +68,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="[--header-height:calc(--spacing(14))] bg-muted/20 min-h-screen">
+    <div className="[--header-height:calc(--spacing(14))] bg-blue-50/30 min-h-screen">
       <Head title="Dasbor - Ringkasan Performa" />
 
       <SidebarProvider className="flex flex-col">
@@ -78,7 +78,6 @@ export default function Dashboard() {
           <AppSidebar />
 
           <SidebarInset>
-            {/* Ditambahkan efek animasi fade-in (animate-in fade-in-50 duration-300) agar transisi halaman lebih mulus */}
             <main className="flex flex-1 flex-col gap-6 p-4 md:p-8 animate-in fade-in-50 duration-300">
 
               {/* HEADER DENGAN SAPAAN & FILTER TANGGAL */}

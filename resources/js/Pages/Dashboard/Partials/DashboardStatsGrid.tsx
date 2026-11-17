@@ -49,23 +49,23 @@ export function DashboardStatsGrid({ stats }: DashboardStatsGridProps) {
         return (
           <Card
             key={stat.title}
-            className="transition-all hover:ring-foreground/20 hover:shadow-xs"
+            className="border-blue-100 bg-white shadow-sm transition-all hover:border-blue-300 hover:shadow-md"
           >
-            <CardHeader>
-              <CardTitle className="text-xs font-medium text-muted-foreground">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 {stat.title}
               </CardTitle>
               <CardAction>
-                <div className="flex size-7 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                  <Icon className="size-3.5" />
+                <div className="flex size-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors">
+                  <Icon className="size-4" />
                 </div>
               </CardAction>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold tracking-tight text-foreground">
+              <div className="text-2xl font-bold tracking-tight text-slate-900">
                 {stat.value}
               </div>
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-1 text-[11px] text-slate-500 font-medium">
                 {stat.description}
               </p>
             </CardContent>
