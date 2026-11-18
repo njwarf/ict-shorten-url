@@ -17,15 +17,11 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        // Cukup buat satu saja untuk Test User
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
-
-        User::factory()->create([
-    'name' => 'Test User',
-    'email' => 'test@example.com',
-]);
 
         $this->call([
             ReferrerSeeder::class,
