@@ -14,14 +14,14 @@ import {
     DialogTrigger,
 } from "@/Components/ui/dialog"
 import { Checkbox } from "@/Components/ui/checkbox"
-import { Label } from "@/Components/ui/label"
+import { Label } from "@/components/ui/label"
 
 export type User = {
     id: number
     name: string
     email: string
     role: string
-    total_links: number
+    urls_count: number // Menggunakan urls_count yang dikirim oleh Controller withCount('urls')
     created_at: string
 }
 
@@ -156,10 +156,10 @@ export const columns: ColumnDef<User>[] = [
         },
     },
     {
-        accessorKey: "total_links",
+        accessorKey: "urls_count", // Disesuaikan dengan withCount('urls') dari Laravel
         header: "Total Links",
         cell: ({ row }) => {
-            const total = row.getValue("total_links") as number;
+            const total = row.getValue("urls_count") as number;
             return <div className="font-medium">{total ?? 0} Link</div>;
         },
     },

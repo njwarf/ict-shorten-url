@@ -14,8 +14,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/Components/ui/table"
-import { Button } from "@/Components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -30,20 +28,15 @@ export function DataTable<TData, TValue>({
     pagination,
     onPageChange,
 }: DataTableProps<TData, TValue>) {
-    // Memastikan data selalu berupa array aman
-    const safeData = Array.isArray(data) ? data : []
-
     const table = useReactTable({
-        data: safeData,
+        data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        manualPagination: true, // Wajib true karena paginasi diatur oleh Laravel Controller
     })
 
     return (
         <div className="space-y-4">
-            {/* TABEL */}
-            <div className="rounded-md border bg-card">
+            <div className="rounded-md border bg-white">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -70,21 +63,15 @@ export function DataTable<TData, TValue>({
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell
-                                    colSpan={columns.length}
-                                    className="h-24 text-center text-muted-foreground"
-                                >
-                                    No results found.
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    Tidak ada data.
                                 </TableCell>
                             </TableRow>
                         )}
@@ -92,31 +79,27 @@ export function DataTable<TData, TValue>({
                 </Table>
             </div>
 
-            {/* PAGINATION */}
-            {pagination && pagination?.last_page > 1 && (
-                <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
-                    <span>
-                        Page {pagination.current_page} of {pagination.last_page}
-                    </span>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={pagination.current_page <= 1}
-                            onClick={() => onPageChange && onPageChange(pagination.current_page - 1)}
+            {/* Pagination Opsional jika dikirim dari parent */}
+            {pagination && pagination.last_page > 1 && (
+                <div className="flex items-center justify-between px-2">
+                    <div className="text-sm text-muted-foreground">
+                        Halaman {pagination.current_page} dari {pagination.last_page}
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => onPageChange?.(pagination.current_page - 1)}
+                            disabled={pagination.current_page === 1}
+                            className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 bg-white"
                         >
-                            <ChevronLeft className="mr-1 size-3.5" />
-                            Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={pagination.current_page >= pagination.last_page}
-                            onClick={() => onPageChange && onPageChange(pagination.current_page + 1)}
+                            Sebelumnya
+                        </button>
+                        <button
+                            onClick={() => onPageChange?.(pagination.current_page + 1)}
+                            disabled={pagination.current_page === pagination.last_page}
+                            className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 bg-white"
                         >
-                            Next
-                            <ChevronRight className="ml-1 size-3.5" />
-                        </Button>
+                            Selanjutnya
+                        </button>
                     </div>
                 </div>
             )}

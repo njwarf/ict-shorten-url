@@ -23,6 +23,7 @@ import {
   UsersIcon,
   BriefcaseIcon,
   Pin,
+  Users,
 } from "lucide-react"
 
 type PinnedLink = {
@@ -32,29 +33,6 @@ type PinnedLink = {
 };
 
 const data = {
-  navMain: [
-    {
-      title: "Dasbor",
-      url: "/dashboard",
-      icon: (
-        <LayoutDashboard />
-      ),
-    },
-    {
-      title: "Analytics",
-      url: "/analytics", // <-- DIPERBAIKI DARI "/dashboard/analytics" MENJADI "/analytics"
-      icon: (
-        <ChartColumn />
-      ),
-    },
-    {
-      title: "Tautan",
-      url: "/links",
-      icon: (
-        <Link2 />
-      ),
-    },
-  ],
   navSecondary: [
     {
       title: "Persuratan UMTAS",
@@ -100,7 +78,37 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = page.props.auth.user;
   const pinnedLinks: PinnedLink[] = page.props.pinnedLinks ?? [];
 
-  const navMain = data.navMain;
+  // Periksa apakah user yang sedang login memiliki role admin
+  const isAdmin = user?.role === 'admin';
+
+  // Daftar menu utama yang bersifat dinamis berdasarkan role
+  const navMain = [
+    {
+      title: "Dasbor",
+      url: "/dashboard",
+      icon: <LayoutDashboard />,
+    },
+    {
+      title: "Analitik",
+      url: "/dashboard/analytics",
+      icon: <ChartColumn />,
+    },
+    {
+      title: "Tautan",
+      url: "/links",
+      icon: <Link2 />,
+    },
+    // Menu Users hanya akan dirender jika user berstatus admin
+    ...(isAdmin
+      ? [
+        {
+          title: "Users",
+          url: "/admin/users",
+          icon: <Users />,
+        },
+      ]
+      : []),
+  ];
 
   return (
     <Sidebar

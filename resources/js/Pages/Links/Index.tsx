@@ -8,7 +8,7 @@ import { Input } from "@/Components/ui/input"
 import { Button } from "@/Components/ui/button"
 import { SidebarInset, SidebarProvider } from "@/Components/ui/sidebar"
 import { columns } from "./columns"
-import { DataTable } from "@/Components/data-table"
+import { DataTable } from "@/Components/ui/data-table"
 
 export default function LinksIndex({ links, filters }: { links: any; filters: any }) {
   const [search, setSearch] = useState(filters?.search ?? "")
