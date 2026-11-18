@@ -3,6 +3,8 @@
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -24,15 +26,29 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Rute Analitik yang terhubung ke AnalyticsController
+    Route::get('/dashboard/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+
     Route::patch('/links/{id}/toggle-pin', [LinkController::class, 'togglePin'])
-    ->name('links.toggle-pin');
+        ->name('links.toggle-pin');
 
     Route::resource('links', LinkController::class);
 });
 
-
+// Grup rute khusus Admin dengan proteksi auth
+Route::middleware(['auth'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    });
 
 require __DIR__.'/auth.php';
 
+// PERHATIKAN: Rute dinamis /{short_code} harus selalu berada di baris paling bawah 
+// agar tidak menabrak rute statis seperti /links, /dashboard/analytics, atau /admin/users
 Route::get('/{short_code}', [LinkController::class, 'redirect'])
     ->name('links.redirect');

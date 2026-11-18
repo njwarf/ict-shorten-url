@@ -12,7 +12,6 @@ import { TopPerformingCard } from "./Dashboard/Partials/TopPerformingCard"
 import { RecentActivityCard } from "./Dashboard/Partials/RecentActivityCard"
 import type { DashboardProps } from "./Dashboard/types"
 
-
 export default function Dashboard() {
   const {
     stats,
@@ -69,8 +68,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="[--header-height:calc(--spacing(14))]">
-      <Head title="Dasbor" />
+    <div className="[--header-height:calc(--spacing(14))] bg-blue-50/30 min-h-screen">
+      <Head title="Dasbor - Ringkasan Performa" />
       <SidebarProvider className="flex flex-col">
         <SiteHeader />
 
@@ -78,26 +77,28 @@ export default function Dashboard() {
           <AppSidebar />
 
           <SidebarInset>
-            <main className="flex flex-1 flex-col gap-6 p-4 md:p-6">
-              {/* HEADER WITH GREETING & DATE FILTER */}
+            <main className="flex flex-1 flex-col gap-6 p-4 md:p-8 animate-in fade-in-50 duration-300">
+
+              {/* HEADER DENGAN SAPAAN & FILTER TANGGAL */}
               <DashboardHeader
-                userName={auth.user?.name ?? "User"}
+                userName={auth.user?.name ?? "Pengguna"}
                 totalDays={totalDays}
                 dateRange={dateRange}
                 onDateRangeChange={handleDateRangeChange}
               />
 
-              {/* STATS OVERVIEW CARDS */}
+              {/* KARTU STATISTIK UTAMA */}
               <DashboardStatsGrid stats={stats} />
 
-              {/* CHART & TOP PERFORMING */}
+              {/* GRAFIK & KARTU PERFORMA TERATAS */}
               <div className="grid w-full min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
                 <PerformanceChartCard data={clicksByDate} />
                 <TopPerformingCard links={topPerforming} />
               </div>
 
-              {/* RECENT ACTIVITY TABLE */}
+              {/* TABEL AKTIVITAS TERBARU */}
               <RecentActivityCard activity={recentActivity} />
+
             </main>
           </SidebarInset>
         </div>
